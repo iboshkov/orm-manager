@@ -14,7 +14,7 @@
     </p>
     <ul class="menu-list">
         @foreach($models as $name => $data)
-            <li><a href="#">{{ humanize_attribute("test_case") }}</a></li>
+            <li><a href="#">{{ $name }}</a></li>
         @endforeach
     </ul>
 @endsection
@@ -23,47 +23,7 @@
 @section('content')
 
     @foreach($models as $name => $data)
-        <nav class="panel">
-            <p class="panel-heading">
-                {{ $name }}
-            </p>
-            <div class="panel-block">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        @foreach($data["attributes"] as $attribute => $type)
-                            <th>{{ humanize_attribute($attribute) }}</th>
-                        @endforeach
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tfoot>
-                    <tr>
-                        @foreach($data["attributes"] as $attribute => $type)
-                            <th>{{ humanize_attribute($attribute) }}</th>
-                        @endforeach
-                        <th>Actions</th>
-                    </tr>
-                    </tfoot>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-            <div class="panel-block">
-                <div class="columns">
-                    <div class="column">
-                        <button class="button is-primary is-outlined is-fullwidth">
-                            Add New
-                        </button>
-                    </div>
-                    <div class="column">
-                        <button class="button is-danger is-outlined is-fullwidth">
-                            Drop All
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </nav>
+        <model-view class-name="{{ $name }}"></model-view>
     @endforeach
     <example></example>
 @endsection

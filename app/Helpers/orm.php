@@ -5,5 +5,5 @@ function humanize_attribute($var) {
     // Split at capital letters
     $pieces = preg_split('/(?=[A-Z]+)/', $studly);
 
-    return join($pieces, " ");
+    return trim(join($pieces, " "));
 }

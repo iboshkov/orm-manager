@@ -30,7 +30,7 @@
     </nav>
 
     <section class="section">
-        <div class="container">
+        <div class="container-fluid">
             <div class="columns">
                 <div class="column">
                     @section('sidebar')
@@ -74,6 +74,12 @@
 </div>
 
 </body>
+<script>
+    window.Laravel = <?php echo json_encode([
+            'csrfToken' => csrf_token(),
+    ]); ?>
+</script>
+
 <script src="/js/app.js"></script>
 
 </html>

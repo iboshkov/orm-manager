@@ -12,8 +12,21 @@ require('./bootstrap');
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
+Vue.directive('truncate', {
+    bind: function (el, binding, vnode) {
+
+        el.innerHTML = "BULLSHIT"; // text.substring(0, stop);
+    }
+});
 
 Vue.component('example', require('./components/Example.vue'));
+Vue.component('field-control', require('./components/FieldControl.vue'));
+Vue.component('model-view', require('./components/ModelView.vue'));
+
+
 const app = new Vue({
-    el: '#app'
+    el: '#app',
+    filters: {
+        truncate: (value, amount) => { return "test" }
+    }
 });

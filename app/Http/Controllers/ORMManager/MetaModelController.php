@@ -11,17 +11,20 @@ use App\Providers\ORMHelper;
 class MetaModelController extends Controller
 {
 
-    protected function getModelMeta($model, $includeRelations = true) {
+    protected function getModelMeta($model=null, $includeRelations = true) {
         $conn = DB::connection();
 
         $instance = new $model();
-        $attrs = array_merge($instance->getFillable(), $instance->getHidden());
+        $attrs = array_unique(array_merge($instance->getFillable(), $instance->getHidden()));
         $tableName = $instance->getTable();
 
         $relations = $instance->getRelationships();
 
         $relatedModels = array_map(function($rel) use ($instance) {
-            return get_class($instance->{$rel}()->getRelated());
+            $relation = $instance->{$rel}();
+            $relatedModel = $relation->getRelated();
+            $relationType = explode('\\', get_class($relation));
+            return array("model" => get_class($relatedModel), "type" => array_pop($relationType));
         }, $relations);
 
         $relationModelMap = array_combine($relations, $relatedModels);
@@ -31,13 +34,21 @@ class MetaModelController extends Controller
             return $conn->getDoctrineColumn($tableName, $attr)->getType()->getName();
         }, $attrs);
 
-        $attributeTypeMap = array_combine($attrs, $types);
 
+
+        $attributeTypeMap = array_map(function($k, $v) {
+            return array("name" => $k, "type" => $v, "humanName" => humanize_attribute($k));
+        }, $attrs, $types);
         return array(
             "attributes" => $attributeTypeMap,
             "relationships" => $relationModelMap
         );
     }
+
+    public function getModelMetaRoute(Request $request) {
+        return $this->getModelMeta($request["class"]);
+    }
+
     public function getModels()
     {
         $models = config("orm.models");
