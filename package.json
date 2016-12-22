@@ -1,0 +1,38 @@
+{
+  "private": true,
+  "scripts": {
+    "prod": "gulp --production",
+    "dev": "gulp watch"
+  },
+  "devDependencies": {
+    "bootstrap-sass": "^3.3.7",
+    "gulp": "^3.9.1",
+    "jquery": "^3.1.0",
+    "laravel-elixir": "^6.0.0-14",
+    "laravel-elixir-vue-2": "^0.2.0",
+    "laravel-elixir-webpack-official": "^1.0.2",
+    "lodash": "^4.16.2",
+    "vue": "^2.0.1",
+    "vue-resource": "^1.0.3"
+  },
+  "name": "orm-manager",
+  "description": "<p align=\"center\"><a href=\"https://laravel.com\" target=\"_blank\"><img width=\"150\"src=\"https://laravel.com/laravel.png\"></a></p>",
+  "version": "0.0.1",
+  "main": "gulpfile.js",
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iboshkov/orm-manager.git"
+  },
+  "author": "Ilija Boshkov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/iboshkov/orm-manager/issues"
+  },
+  "homepage": "https://github.com/iboshkov/orm-manager#readme",
+  "dependencies": {
+    "bulma": "^0.2.3"
+  }
+}
