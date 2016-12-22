@@ -6,6 +6,23 @@ module.exports = {
         hello: function () {
             console.log('hello from mixin!')
         },
+        ucwords: function (str) {
+            //  discuss at: http://locutus.io/php/ucwords/
+            // original by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)
+            // improved by: Waldo Malqui Silva (http://waldo.malqui.info)
+            // improved by: Robin
+            // improved by: Kevin van Zonneveld (http://kvz.io)
+            // bugfixed by: Onno Marsman (https://twitter.com/onnomarsman)
+            //    input by: James (http://www.james-bell.co.uk/)
+            //   example 1: ucwords('kevin van  zonneveld')
+            //   returns 1: 'Kevin Van  Zonneveld'
+            //   example 2: ucwords('HELLO WORLD')
+            //   returns 2: 'HELLO WORLD'
+
+            return (str + '').replace(/^([a-z\u00E0-\u00FC])|\s+([a-z\u00E0-\u00FC])/g, function ($1) {
+                return $1.toUpperCase()
+            })
+        },
         truncate: function (val, stop, end) {
             if (val) {
                 val = val.slice(0, stop) + ((val.length > stop) ? end || "..." : "");

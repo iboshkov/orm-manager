@@ -3,20 +3,25 @@
         <p class="panel-heading">
             Model: {{ className }}
         </p>
-        <div class="panel-block">
 
-            <h2 class="subtitle">Toggle fields</h2>
-            <multiselect v-model="selected" :close-on-select="false" :multiple="true" track-by="name" label="name" :options="options">
+        <div class="panel-block">
+            <p class="control">
+                <label class="label">Limit displayed value length</label>
+
+                <input class="input" type="number" v-model.number="testValue">
+            </p>
+
+            <p class="control">
+                <label class="label">Filter by model field</label>
+
+                <multiselect v-model="selected" :close-on-select="false" :multiple="true" track-by="name" label="name" :options="options">
+            </p>
+
         </div>
         <div class="panel-block">
             <table class="table is-striped is-narrow">
                 <thead>
                 <tr>
-                    <!--
-                    @foreach($data["attributes"] as $attribute => $type)
-                    <th>@{{ humanize_attribute($attribute) }}</th>
-                    @endforeach
-                    -->
                     <th v-for="attr in selected">
                         {{ attr.humanName }}
                     </th>
@@ -34,7 +39,7 @@
                 <tbody>
                 <tr v-for="entry in data">
                     <td v-for="attr in selected">
-                        <span>{{ truncate(entry[attr.name], 15) }}</span>
+                        <span>{{ truncate(entry[attr.name], testValue) }}</span>
                     </td>
                     <td>
                         <div class="columns">
@@ -102,6 +107,7 @@
         data(){
             return{
                 msg:'hello vue',
+                testValue: 15,
                 selected: null,
                 options: ['list', 'of', 'options'],
                 meta: {
