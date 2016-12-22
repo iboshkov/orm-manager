@@ -1,4 +1,4 @@
-<template>
+<template xmlns:v-on="http://www.w3.org/1999/xhtml">
     <nav class="panel">
         <p class="panel-heading">
             Model: {{ className }}
@@ -6,17 +6,7 @@
         <div class="panel-block">
 
             <h2 class="subtitle">Toggle fields</h2>
-            <div class="columns">
-                <div  v-for="attr in meta.attributes" class="column is-narrow">
-                    <p class="control">
-                        <label class="checkbox">
-                            <input type="checkbox">
-                            {{ attr.humanName }}
-                        </label>
-                    </p>
-                </div>
-            </div>
-
+            <multiselect v-model="selected" :close-on-select="false" :multiple="true" track-by="name" label="name" :options="options">
         </div>
         <div class="panel-block">
             <table class="table is-striped is-narrow">
@@ -27,7 +17,7 @@
                     <th>@{{ humanize_attribute($attribute) }}</th>
                     @endforeach
                     -->
-                    <th v-for="attr in meta.attributes">
+                    <th v-for="attr in selected">
                         {{ attr.humanName }}
                     </th>
                     <th>Actions</th>
@@ -35,51 +25,52 @@
                 </thead>
                 <tfoot>
                 <tr>
-                    <th v-for="attr in meta.attributes">
+                    <th v-for="attr in selected">
                         {{ attr.humanName }}
                     </th>
                     <th>Actions</th>
                 </tr>
                 </tfoot>
                 <tbody>
-                    <tr v-for="entry in data">
-                        <td v-for="attr in meta.attributes">
-                            <span>{{ entry[attr.name] }}</span>
-                        </td>
-                        <td>
-                            <div class="columns">
-                                <div class="column">
-                                    <button class="button is-primary is-fullwidth">
-                                        Add New
-                                    </button>
-                                </div>
-                                <div class="column">
-                                    <button class="button is-danger is-fullwidth">
-                                        Drop All
-                                    </button>
-                                </div>
+                <tr v-for="entry in data">
+                    <td v-for="attr in selected">
+                        <span>{{ truncate(entry[attr.name], 15) }}</span>
+                    </td>
+                    <td>
+                        <div class="columns">
+                            <div class="column">
+                                <button class="button is-primary ">
+                                    Add New
+                                </button>
                             </div>
-                        </td>
-                    </tr>
+                            <div class="column">
+                                <button class="button is-danger ">
+                                    Drop All
+                                </button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
                 </tbody>
             </table>
         </div>
         <div class="panel-block">
             <div class="columns">
                 <div class="column">
-                    <button class="button is-primary is-outlined is-fullwidth">
+                    <button v-on:click="foo()" class="button is-primary is-outlined is-fullwidth">
                         Add New
                     </button>
                 </div>
                 <div class="column">
-                    <button class="button is-danger is-outlined is-fullwidth">
+                    <button v-on:click="doShit(123)" class="button is-danger is-outlined is-fullwidth">
                         Drop All
                     </button>
                 </div>
             </div>
         </div>
-    </nav>
 
+
+    </nav>
 </template>
 <style>
     body{
@@ -91,23 +82,41 @@
     }
 </style>
 <script>
+    import Multiselect from 'vue-multiselect';
+
+    var mixins = require("../mixins/util.mixin");
+    console.log(Multiselect);
     export default{
+        components: { Multiselect },
+        mixins: [mixins],
+
+        methods: {
+            doShit: function(test) {
+                console.log("TestA SF UCK");
+            },
+            updateSelected (newSelected) {
+                this.selected = newSelected
+            }
+
+        },
         data(){
             return{
                 msg:'hello vue',
-            meta: {
-                type: Object,
-                default: function() {
-                    return {
-                        attributes: [],
-                        relationships: []
+                selected: null,
+                options: ['list', 'of', 'options'],
+                meta: {
+                    type: Object,
+                    default: function() {
+                        return {
+                            attributes: [],
+                            relationships: []
+                        }
                     }
+                },
+                data: {
+                    type: Array,
+                    default: function() { return []; }
                 }
-            },
-            data: {
-                type: Array,
-                default: function() { return []; }
-            }
             }
         },
         mounted() {
@@ -120,6 +129,8 @@
               }).then((response) => {
                 console.log("Got model meta", response);
                   this.meta = response.body;
+                  this.options = this.meta.attributes;
+                  this.selected = this.meta.attributes;
 
                   this.$http.get('/orm/api/data/all', {params: {
                         "class": this.className
@@ -139,8 +150,6 @@
             className: {
                 type: String
             }
-       },
-        components:{
-        }
+       }
     }
 </script>

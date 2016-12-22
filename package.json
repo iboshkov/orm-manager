@@ -42,6 +42,7 @@
   "homepage": "https://github.com/iboshkov/orm-manager#readme",
   "dependencies": {
     "bulma": "^0.2.3",
+    "vue-multiselect": "^2.0.0-beta.12",
     "vue-tables-2": "^0.2.70"
   }
 }
