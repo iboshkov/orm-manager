@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\ORMManager;
 
 use App\User;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +12,11 @@ use App\Providers\ORMHelper;
 
 class MetaModelController extends Controller
 {
+    protected function getIfExists($key, $arr) {
+        if (isset($arr[$key]))
+            return $arr[$key];
+        return null;
+    }
 
     protected function getModelMeta($model=null, $includeRelations = true) {
         $conn = DB::connection();
@@ -20,14 +27,6 @@ class MetaModelController extends Controller
 
         $relations = $instance->getRelationships();
 
-        $relatedModels = array_map(function($rel) use ($instance) {
-            $relation = $instance->{$rel}();
-            $relatedModel = $relation->getRelated();
-            $relationType = explode('\\', get_class($relation));
-            return array("model" => get_class($relatedModel), "type" => array_pop($relationType));
-        }, $relations);
-
-        $relationModelMap = array_combine($relations, $relatedModels);
 
         //$posts = get_class($instance->{$relations[0]}()->getRelated());
         $types = array_map(function($attr) use ($tableName, $conn) {
@@ -39,6 +38,56 @@ class MetaModelController extends Controller
         $attributeTypeMap = array_map(function($k, $v) {
             return array("name" => $k, "type" => $v, "humanName" => humanize_attribute($k));
         }, $attrs, $types);
+
+        $relatedModels = array_map(function($rel) use ($instance, &$attributeTypeMap) {
+            $relation = $instance->{$rel}();
+
+            $relatedModel = $relation->getRelated();
+
+            $relationType = explode('\\', get_class($relation));
+
+            $result = array(
+                "model" => get_class($relatedModel),
+                "type" => array_pop($relationType)
+            );
+
+            $foreign = null;
+
+            if (method_exists($relation, "getForeignKey"))
+                $result["foreignKey"] = $relation->getForeignKey();
+            if (method_exists($relation, "getQualifiedForeignKey"))
+                $result["foreignKeyFull"] = $relation->getQualifiedForeignKey();
+            if (method_exists($relation, "getPlainForeignKey"))
+                $result["foreignKeyPlain"] = $relation->getPlainForeignKey();
+            if (method_exists($relation, "getOtherKey"))
+                $result["otherKey"] = $relation->getOtherKey();
+            if (method_exists($relation, "getQualifiedOtherKeyName"))
+                $result["otherKeyFull"] = $relation->getQualifiedOtherKeyName();
+            if (method_exists($relation, "getParentKey"))
+                $result["parentKey"] = $relation->getParentKey();
+            if (method_exists($relation, "getQualifiedParentKeyName"))
+                $result["parentKeyFull"] = $relation->getQualifiedParentKeyName();
+            $foreign = $result["foreignKey"] ?: $result["foreignKeyPlain"];
+            if ($foreign) {
+                $toDelete = -1;
+                foreach($attributeTypeMap as $idx => $val) {
+                    if ($val["name"] === $foreign)
+                    {
+                        $toDelete = $idx;
+                    }
+                }
+
+                if ($toDelete >= 0) {
+                    unset($attributeTypeMap[$toDelete]);
+                }
+            }
+
+
+            return $result;
+        }, $relations);
+
+        $relationModelMap = array_combine($relations, $relatedModels);
+
         return array(
             "attributes" => $attributeTypeMap,
             "relationships" => $relationModelMap

@@ -31,7 +31,7 @@ class User extends Authenticatable
     ];
 
     public function posts() {
-        return $this->hasMany('App\Blog\Post');
+        return $this->hasMany('App\Blog\Post', 'author_id');
     }
 
     protected $relationships = [
