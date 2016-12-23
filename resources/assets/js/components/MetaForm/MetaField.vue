@@ -1,6 +1,5 @@
 <template>
     <div>
-        {{ meta.name }}
         <string-field v-on:input="updateValue()" v-if="meta.type == 'string'" v-model="value"  :meta="meta" />
         <boolean-field v-on:input="updateValue()" v-if="meta.type == 'boolean'" v-model="value" :meta="meta" />
         <text-field v-on:input="updateValue()" v-if="meta.type == 'text'" v-model="value" :meta="meta" />

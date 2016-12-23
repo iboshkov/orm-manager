@@ -1,10 +1,15 @@
 <template xmlns:v-on="http://www.w3.org/1999/xhtml">
     <nav class="panel">
         <p class="panel-heading">
-            Meta Form: {{ className }} {{ 'testCase test_case' | humanize }}
+            {{ className }}
         </p>
         <div class="panel-block">
             <meta-field v-on:input="valueUpdated(attr.name, $event)" v-for="attr in meta.attributes" :meta="attr"></meta-field>
+        </div>
+        <p class="panel-heading">
+            Relationships:
+        </p>
+        <div class="panel-block">
             <p v-for="attr in meta.relationships">{{ attr.type }} {{ attr.model }}</p>
         </div>
         <p>
