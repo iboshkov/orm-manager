@@ -17,8 +17,8 @@ Route::get('dashboard', 'ORMManager\MetaModelController@showDashboard')->name("d
 Route::get('models', 'ORMManager\MetaModelController@showModels')->name("models");
 
 Route::group(["prefix" => "api"], function($router) {
-    Route::get('models', 'ORMManager\MetaModelController@getModels');
     Route::get('meta/', 'ORMManager\MetaModelController@getModelMetaRoute');
+    Route::get('meta/list', 'ORMManager\MetaModelController@getModels');
     Route::get('data/all', 'ORMManager\ModelDataController@getAll');
 });
 

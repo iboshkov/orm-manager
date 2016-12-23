@@ -14,11 +14,47 @@ require('./bootstrap');
  */
 
 
-Vue.component('example', require('./components/Example.vue'));
-Vue.component('field-control', require('./components/FieldControl.vue'));
-Vue.component('model-view',require('./components/ModelView.vue'));
+Vue.filter("truncate", require("./filters/truncate.filter"));
+Vue.filter("humanize", require("./filters/humanize.filter"));
 
+Vue.component('example', require('./components/Example.vue'));
+Vue.component('field-control', require('./components/MetaField.vue'));
+Vue.component('model-component', require('./components/ModelComponent.vue'));
+
+var appView = require('./views/App.vue');
+var dashView = require('./views/Dashboard.vue');
+var modelView = require('./views/Models/Layout.vue');
+var allModelsView = require('./views/Models/All.vue');
+var singleModelView = require('./views/Models/Single.vue');
+
+const routes = [
+    { path: '/', redirect: {name: 'dashboard' }, component: dashView },
+
+    { path: '/dashboard', name: "dashboard", component: dashView },
+    { path: '/models/', name: 'allModels', component: modelView
+/*        , children: [
+            {
+                // render /models/
+                path: '/',
+                name: "allModels",
+                component: allModelsView
+            },
+            {
+                // render /models/:id
+                path: '/models/manage/:id',
+                name: 'singleModel',
+                component: singleModelView
+            }
+        ]
+        */
+    }
+]
+
+const router = new VueRouter({
+    routes // short for routes: routes
+})
 
 const app = new Vue({
     el: '#app',
+    router
 });

@@ -61,7 +61,7 @@ class MetaModelController extends Controller
 
         $modelMap = array_combine($models, $metaData);
 
-        return $modelMap;
+        return $models;
     }
 
 
@@ -74,7 +74,7 @@ class MetaModelController extends Controller
     public function showModels()
     {
         $models = $this->getModels();
-        return view('orm_manager.models', ['models' => $models]);
+        return view('orm_manager.app', ['models' => $models]);
     }
 
 }

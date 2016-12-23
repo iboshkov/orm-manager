@@ -10,7 +10,7 @@ class Post extends Model
     use ORMManagerSupport;
     protected $table = 'posts';
 
-    protected $fillable = ["title"];
+    protected $fillable = ["title", "slug", "body", "active"];
 
     public function user() {
         return $this->belongsTo('App\User');

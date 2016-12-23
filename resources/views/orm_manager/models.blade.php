@@ -23,9 +23,8 @@
 @section('content')
 
     @foreach($models as $name => $data)
-        <model-view class-name="{{ $name }}"></model-view>
+        <model-component class-name="{{ $name }}"></model-component>
     @endforeach
-    <example></example>
 @endsection
 
 @section('footer')
