@@ -2,7 +2,7 @@
     <div>
         <label class="label">{{ meta.name | humanize }}</label>
         <p class="control">
-            <input v-model="value" v-on:input="updateValue($event.target.value)" class="input" type="text" placeholder="Small input">
+            <textarea v-model="value" v-on:input="updateValue($event.target.value)" class="textarea"></textarea>
         </p>
     </div>
 </template>
@@ -22,7 +22,6 @@
             // method is used to format and place constraints
             // on the input's value
             updateValue: function (value) {
-            console.log("Update");
                 this.$emit('input', value)
             }
         },

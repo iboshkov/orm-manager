@@ -4,11 +4,11 @@
             Meta Form: {{ className }} {{ 'testCase test_case' | humanize }}
         </p>
         <div class="panel-block">
-            <meta-field v-model="testData.active" v-for="attr in meta.attributes" :meta="attr">{{ attr.name }} : {{ attr.type }}</meta-field>
+            <meta-field v-on:input="valueUpdated(attr.name, $event)" v-for="attr in meta.attributes" :meta="attr"></meta-field>
             <p v-for="attr in meta.relationships">{{ attr.type }} {{ attr.model }}</p>
         </div>
         <p>
-            {{ testData }}
+            {{ value }}
         </p>
     </nav>
 </template>
@@ -26,24 +26,23 @@
         mixins: [mixins],
 
         methods: {
+            valueUpdated: function(attr, val) {
+                Vue.set(this.value, attr, val);
+
+            },
             loadData() {
+                var vm = this;
                   this.$http.get('/orm/api/meta/', {params: {
                         "class": this.className
                    }
                   }).then((response) => {
                     console.log("Got model meta", response);
-                      this.meta = response.body;
-                      this.options = this.meta.attributes;
-                      this.selected = this.meta.attributes;
+                      vm.meta = response.body;
+                      vm.options = this.meta.attributes;
+                      vm.selected = this.meta.attributes;
 
-                      this.$http.get('/orm/api/data/all', {params: {
-                            "class": this.className
-                        }
-                      }).then((response) => {
-                        console.log("Got data for meta", response);
-                        this.data = response.body;
-                      }, (response) => {
-                        // error callback
+                      vm.meta.attributes.forEach(function(attr){
+                        Vue.set(vm.value, attr.name, "");
                       });
                   }, (response) => {
                     // error callback
@@ -52,9 +51,7 @@
         },
         data(){
             return {
-                testData: {
-                    name: "",
-                    active: false
+                value: {
                 },
                 meta: {
                     type: Object,
