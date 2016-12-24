@@ -6,7 +6,7 @@
             </slot>
         </p>
         <div class="panel-block">
-            <meta-field  v-model="result[attr.name]" v-for="attr in meta.attributes" :meta="attr"></meta-field>
+            <meta-field v-model="result[attr.name]" v-for="attr in meta.attributes" :meta="attr"></meta-field>
 
             <!--<meta-field  v-on:input="updateValue" v-for="attr in meta.attributes" :meta="attr"></meta-field>-->
         </div>
@@ -21,6 +21,7 @@
 
         Form result:<br/>
         {{ result }}
+        {{ value }}
     </nav>
 </template>
 
@@ -33,6 +34,12 @@
         mixins: [mixins],
 
         methods: {
+            updateMeta () {
+                var vm = this;
+                vm.meta.attributes.forEach(function(attr){
+                    Vue.set(vm.result, attr.name,  vm.value[attr.name] || "");
+                });
+            },
             updateValue: function(attr, val) {
                 console.log("Meta form update", attr.name, val);
                 this.$emit("input", {});
@@ -48,9 +55,7 @@
                       vm.options = this.meta.attributes;
                       vm.selected = this.meta.attributes;
 
-                      vm.meta.attributes.forEach(function(attr){
-                        Vue.set(vm.result, attr.name,  vm.value[attr.name] || "");
-                      });
+                      vm.updateMeta();
                   }, (response) => {
                     // error callback
                   });
@@ -59,7 +64,7 @@
         data(){
             return {
                 result: {
-                    name: "Initial"
+
                 },
                 meta: {
                     type: Object,
@@ -77,10 +82,13 @@
             className: function(val) {
                 console.log("Change", val);
                 this.loadData();
+            },
+            value: function(val) {
+                this.updateMeta();
             }
         },
         mounted() {
-            console.log("Mounted, testing...");
+            this.result = this.value;
             this.loadData();
 
         },

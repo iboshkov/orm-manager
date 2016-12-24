@@ -1,6 +1,10 @@
 <template>
         <div>
             <meta-form v-model="result" class-name="App\User"></meta-form>
+            Actual result: {{result}}
+
+            <input type="text" v-model="result.name" />
+            <button v-on:click="result = testUpdate">Test</button>
             <!--
             <tabs animation="slide" :only-fade="false">
                 <tab-pane label="Data">
@@ -28,6 +32,9 @@
             return {
                 result: {
                     name: "Test"
+                },
+                testUpdate: {
+                    name: "Test123"
                 },
                 showEditModal: false,
             }
