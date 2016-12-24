@@ -1,7 +1,7 @@
 <template>
     <p class="control">
         <label class="checkbox">
-            <input v-on:change="updateValue($event.target.value)" v-model="value" type="checkbox">
+            <input ref="input" v-on:change="updateValue($event.target.value)" type="checkbox">
             {{ meta.name | humanize }}
         </label>
     </p>
@@ -19,7 +19,9 @@
         },
         methods: {
             updateValue: function (value) {
-                this.$emit('input', this.value)
+                this.$refs.input.value = value
+
+                this.$emit('input', value)
             }
         },
         props: {

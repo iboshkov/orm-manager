@@ -1,18 +1,27 @@
-<template>
-    <div>
-        <header-component/>
-        <div>this is template body</div>
-        <other-component/>
+<template id="batchControls">
+    <div class="panel-block">
+        <div class="columns">
+            <div class="column">
+                <button class="button is-primary is-fullwidth is-outlined">
+                        <span class="icon is-small">
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                        </span>
+                    <span>Add New</span>
+                </button>
+            </div>
+            <div class="column">
+                <button class="button is-danger is-fullwidth is-outlined">
+                        <span class="icon is-small">
+                            <i class="fa fa-warning" aria-hidden="true"></i>
+                        </span>
+                    <span>Drop All</span>
+                </button>
+            </div>
+        </div>
     </div>
 </template>
-<style>
-    body{
-        background-color:#ff0000;
-    }
-</style>
+
 <script>
-    import HeaderComponent from './components/header.vue'
-    import OtherComponent from './components/other.vue'
     export default{
         data(){
             return{
@@ -20,8 +29,6 @@
             }
         },
         components:{
-            'other-component':OtherComponent,
-            HeaderComponent,
         }
     }
 </script>

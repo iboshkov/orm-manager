@@ -8,14 +8,10 @@
                 <ul class="menu-list">
                     <li><router-link active-class="is-active" :to="{name: 'allModels'}">All</router-link></li>
 
-                    <li v-for="model in metaList"><a active-class="is-active">{{ model }}</a></li>
+                    <li v-for="model in metaList"><router-link :to="{name: 'singleModel', params:{ id: model }}" active-class="is-active">1{{ model }}</router-link></li>
                 </ul>
             </div>
-
-            <h1 class="title">Meta form</h1>
-            <meta-form class-name="App\Blog\Post"></meta-form>
-
-            <model-component v-for="model in metaList" :class-name="model" />
+            <router-view></router-view>
         </app-layout>
     </div>
 </template>
@@ -25,7 +21,8 @@
 <script>
     import AppLayout from '../App.vue'
     import ModelComponent from '../../components/ModelComponent.vue'
-    import MetaForm from '../../components/MetaForm.vue';
+    import MetaForm from '../../components/MetaForm/MetaForm.vue';
+
     export default{
         data(){
             return {

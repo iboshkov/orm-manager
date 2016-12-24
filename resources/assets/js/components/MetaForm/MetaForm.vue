@@ -1,10 +1,14 @@
 <template xmlns:v-on="http://www.w3.org/1999/xhtml">
     <nav class="panel">
         <p class="panel-heading">
-            {{ className }}
+            <slot name="form-title">
+                Attributes for <span :title="className"><strong>{{ className | classOnly }}</strong></span>:
+            </slot>
         </p>
         <div class="panel-block">
-            <meta-field v-on:input="valueUpdated(attr.name, $event)" v-for="attr in meta.attributes" :meta="attr"></meta-field>
+            <meta-field  v-model="result[attr.name]" v-for="attr in meta.attributes" :meta="attr"></meta-field>
+
+            <!--<meta-field  v-on:input="updateValue" v-for="attr in meta.attributes" :meta="attr"></meta-field>-->
         </div>
         <p class="panel-heading">
             Relationships:
@@ -12,18 +16,16 @@
         <div class="panel-block">
             <p v-for="attr in meta.relationships">{{ attr.type }} {{ attr.model }}</p>
         </div>
-        <p>
-            {{ value }}
-        </p>
+
+        <slot name="form-footer"></slot>
+
+        Form result:<br/>
+        {{ result }}
     </nav>
 </template>
-<style>
-    table {
-        table-layout: fixed;
-    }
-</style>
+
 <script>
-    var mixins = require("../mixins/util.mixin");
+    var mixins = require("../../mixins/util.mixin");
     import MetaField from './MetaField.vue';
 
     export default{
@@ -31,9 +33,9 @@
         mixins: [mixins],
 
         methods: {
-            valueUpdated: function(attr, val) {
-                Vue.set(this.value, attr, val);
-
+            updateValue: function(attr, val) {
+                console.log("Meta form update", attr.name, val);
+                this.$emit("input", {});
             },
             loadData() {
                 var vm = this;
@@ -47,7 +49,7 @@
                       vm.selected = this.meta.attributes;
 
                       vm.meta.attributes.forEach(function(attr){
-                        Vue.set(vm.value, attr.name, "");
+                        Vue.set(vm.result, attr.name,  vm.value[attr.name] || "");
                       });
                   }, (response) => {
                     // error callback
@@ -56,7 +58,8 @@
         },
         data(){
             return {
-                value: {
+                result: {
+                    name: "Initial"
                 },
                 meta: {
                     type: Object,
@@ -82,9 +85,11 @@
 
         },
         props: {
+            value: {
+            },
             className: {
                 type: String
-            }
+            },
        }
     }
 </script>

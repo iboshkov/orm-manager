@@ -1,36 +1,38 @@
 <template>
     <div>
-        <string-field v-on:input="updateValue()" v-if="meta.type == 'string'" v-model="value"  :meta="meta" />
-        <boolean-field v-on:input="updateValue()" v-if="meta.type == 'boolean'" v-model="value" :meta="meta" />
-        <text-field v-on:input="updateValue()" v-if="meta.type == 'text'" v-model="value" :meta="meta" />
+        <template v-if="meta.type == 'string'">
+            <string-field :value="value" v-on:input="updateValue" :meta="meta" />
+        </template>
     </div>
 </template>
 
 <script>
-    import StringField from './StringField.vue';
-    import BooleanField from './BooleanField.vue';
-    import TextField from './TextField.vue';
+    import StringField from './Fields/StringField.vue';
+    import BooleanField from './Fields/BooleanField.vue';
+    import TextField from './Fields/TextField.vue';
     export default {
         components: { StringField, BooleanField, TextField },
         mounted() {
-            console.log('Field control mounted.')
+            console.log('Meta field mounted.', this.value);
         },
         data(){
             return {
-                value: ""
+                fieldData: ""
             }
         },
         methods: {
-            updateValue: function () {
-                console.log("meta Update", this.value);
-
-                this.$emit('input', this.value)
+            updateValue: function (value) {
+                console.log("Meta field update", value)
+                this.$emit('input', value)
             }
         },
         props: {
             meta: {
                 type: Object
+            },
+            value: {
             }
+
         }
     }
 </script>

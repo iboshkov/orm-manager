@@ -39,7 +39,7 @@ class MetaModelController extends Controller
             return array("name" => $k, "type" => $v, "humanName" => humanize_attribute($k));
         }, $attrs, $types);
 
-        $relatedModels = array_map(function($rel) use ($instance, &$attributeTypeMap) {
+        $relatedModels = array_map(function($rel) use ($instance, & $attributeTypeMap) {
             $relation = $instance->{$rel}();
 
             $relatedModel = $relation->getRelated();

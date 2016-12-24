@@ -2,7 +2,7 @@
     <div>
         <label class="label">{{ meta.name | humanize }}</label>
         <p class="control">
-            <input v-model="value" v-on:input="updateValue($event.target.value)" class="input" type="text" placeholder="Small input">
+            <input ref="input" :value="value" v-on:input="updateValue($event.target.value)" class="input" type="text" placeholder="Enter a value...">
         </p>
     </div>
 </template>
@@ -10,23 +10,21 @@
 <script>
     export default {
         mounted() {
-            console.log('Field control mounted.')
+            console.log('String control mounted.', this.value)
         },
         data(){
             return {
-                value: ""
             }
         },
         methods: {
-            // Instead of updating the value directly, this
-            // method is used to format and place constraints
-            // on the input's value
             updateValue: function (value) {
-            console.log("Update");
-                this.$emit('input', value)
+                this.$refs.input.value = value;
+                console.log("String field update", value);
+                this.$emit('input', value);
             }
         },
         props: {
+            value: {},
             meta: {
                 type: Object
             }
