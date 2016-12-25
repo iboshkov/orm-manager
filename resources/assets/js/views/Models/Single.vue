@@ -1,21 +1,17 @@
 <template>
         <div>
-            <meta-form v-model="result" class-name="App\User"></meta-form>
-            Actual result: {{result}}
+            <!--<meta-form v-model="result" class-name="App\User"></meta-form>-->
+            <!--Actual result: {{result}}-->
 
-            <input type="text" v-model="result.name" />
-            <button v-on:click="result = testUpdate">Test</button>
-            <!--
+            <!--<input type="text" v-model="result.name" />-->
             <tabs animation="slide" :only-fade="false">
-                <tab-pane label="Data">
+                <tab-pane selected label="Data">
                     <model-component v-on:edit="editToggled(entry)" :class-name="$route.params.id" />
                 </tab-pane>
-                <tab-pane selected label="Utilities">
+                <tab-pane label="Utilities">
                 </tab-pane>
                 <tab-pane label="Videos">Video Tab</tab-pane>
             </tabs>
-
-            -->
         </div>
 </template>
 <style>

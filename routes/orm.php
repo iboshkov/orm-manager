@@ -17,9 +17,19 @@ Route::get('dashboard', 'ORMManager\MetaModelController@showDashboard')->name("d
 Route::get('models', 'ORMManager\MetaModelController@showModels')->name("models");
 
 Route::group(["prefix" => "api"], function($router) {
-    Route::get('meta/', 'ORMManager\MetaModelController@getModelMetaRoute');
-    Route::get('meta/list', 'ORMManager\MetaModelController@getModels');
-    Route::get('data/all', 'ORMManager\ModelDataController@getAll');
+    // Metadata API
+    Route::group(["prefix" => "meta"], function($router) {
+        Route::get('/', 'ORMManager\MetaModelController@getModelMetaRoute');
+        Route::get('/list', 'ORMManager\MetaModelController@getModels');
+    });
+
+    // CRUD API
+    Route::group(["prefix" => "data"], function($router) {
+        Route::get('/', 'ORMManager\ModelDataController@getAll');
+        Route::post('/', 'ORMManager\ModelDataController@createEntry');
+        Route::put('/', 'ORMManager\ModelDataController@updateEntry');
+        Route::delete('/', 'ORMManager\ModelDataController@deleteEntry');
+    });
 });
 
 

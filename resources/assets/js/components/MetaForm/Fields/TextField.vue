@@ -2,8 +2,10 @@
     <div>
         <label class="label">{{ meta.name | humanize }}</label>
         <p class="control">
-            <textarea ref="input" v-on:input="updateValue($event.target.value)" class="textarea"
-                placeholder="Enter some text."></textarea>
+            <textarea ref="input" v-on:input="updateValue($event.target.value)"
+                      :value="value"
+                      class="textarea"
+                      placeholder="Enter some text."></textarea>
         </p>
     </div>
 </template>
@@ -13,15 +15,9 @@
         mounted() {
             console.log('Field control mounted.')
         },
-        data(){
-        },
         methods: {
-            // Instead of updating the value directly, this
-            // method is used to format and place constraints
-            // on the input's value
             updateValue: function (value) {
                 this.$refs.input.value = value
-
                 this.$emit('input', value)
             }
         },

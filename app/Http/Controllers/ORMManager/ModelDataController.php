@@ -22,5 +22,17 @@ class ModelDataController extends Controller
         return $models;
     }
 
+    public function createEntry(Request $request) {
+        return "Create";
+    }
+
+    public function updateEntry(Request $request) {
+        return "Update";
+    }
+
+    public function deleteEntry(Request $request) {
+        return "Delete";
+    }
+
 
 }

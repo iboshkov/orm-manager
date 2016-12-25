@@ -1,53 +1,37 @@
 <template>
-    <div :class="['modal', {'is-active' : show}]">
-
-        <div v-on:click="reset(true)" class="modal-background"></div>
-        <div class="modal-card">
-
-            <header class="modal-card-head">
-                <p class="modal-card-title"><strong>{{ title }} {{ className | classOnly }}</strong></p>
-                <button v-on:click="reset(true)" class="delete"></button>
-            </header>
-            <section class="modal-card-body">
-                <meta-form v-model="testModel" :class-name="className"></meta-form>
-            </section>
-            <footer class="modal-card-foot">
-                <a v-on:click="close()" class="button is-primary">Save changes</a>
-                <a v-on:click="reset(true)" class="button">Cancel</a>
-                Val: {{ testModel }} endval
-            </footer>
-        </div>
-
-    </div>
+    <modal v-on:close="close" :show="show">
+        <meta-form v-on:cancel="close" v-on:submit="submit" v-model="formResult" :class-name="className"></meta-form>
+    </modal>
 </template>
 
 <script>
     import MetaForm from "./MetaForm/MetaForm.vue";
+    import Modal from "./Modal.vue";
 
-
-    export default{
+    export default {
         data(){
             return{
                 msg:'hello vue',
-                testModel: {}
+                formResult: {}
               }
         },
         methods: {
+            submit(val) {
+                console.log("Modal firing submit", val);
+                this.$emit("submit", val);
+                this.close();
+            },
             close() {
                 this.$emit("close");
-            },
-            reset(close) {
-                this.testModel = {};
-                if (close) this.close();
             }
         },
         mounted() {
-            this.testModel = this.initialData;
+            this.formResult = this.initialData;
         },
 
         watch: {
             initialData: function(newVal, oldVal) {
-                this.testModel = newVal;
+                this.formResult = newVal;
             }
         },
         props: {
@@ -57,8 +41,8 @@
             className: "",
         },
 
-        components:{
-            MetaForm
+        components: {
+            MetaForm, Modal
         }
     }
 </script>

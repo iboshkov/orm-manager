@@ -6,9 +6,7 @@
             </slot>
         </p>
         <div class="panel-block">
-            <meta-field v-model="result[attr.name]" v-for="attr in meta.attributes" :meta="attr"></meta-field>
-
-            <!--<meta-field  v-on:input="updateValue" v-for="attr in meta.attributes" :meta="attr"></meta-field>-->
+            <meta-field class="meta-field" v-model="result[attr.name]" v-for="attr in meta.attributes" :meta="attr"></meta-field>
         </div>
         <p class="panel-heading">
             Relationships:
@@ -16,15 +14,27 @@
         <div class="panel-block">
             <p v-for="attr in meta.relationships">{{ attr.type }} {{ attr.model }}</p>
         </div>
+        <br/>
+        <div class="control">
+
+            <a v-on:click="submit()" class="button is-primary">Save changes</a>
+            <a v-on:click="cancel()" class="button">Cancel</a>
+
+        </div>
 
         <slot name="form-footer"></slot>
 
         Form result:<br/>
         {{ result }}
-        {{ value }}
+        <br/>
+        Initial value: {{ value }}
     </nav>
 </template>
-
+<style scoped>
+    .meta-field {
+        margin-bottom: 15px;
+    }
+</style>
 <script>
     var mixins = require("../../mixins/util.mixin");
     import MetaField from './MetaField.vue';
@@ -34,31 +44,40 @@
         mixins: [mixins],
 
         methods: {
+            submit() {
+                console.log("Form firing submit", this.result);
+                this.$emit("submit", this.result);
+            },
+            cancel() {
+                this.$emit("cancel");
+            },
             updateMeta () {
                 var vm = this;
-                vm.meta.attributes.forEach(function(attr){
-                    Vue.set(vm.result, attr.name,  vm.value[attr.name] || "");
-                });
+                if (vm.meta.attributes && vm.meta.attributes.length > 0) {
+                    vm.meta.attributes.forEach(function(attr){
+                        Vue.set(vm.result, attr.name,  vm.value[attr.name] || "");
+                    });
+                }
             },
-            updateValue: function(attr, val) {
-                console.log("Meta form update", attr.name, val);
-                this.$emit("input", {});
+            updateValue: function(val) {
+                console.log("Meta form update", val);
+                this.$emit("input", val);
             },
             loadData() {
                 var vm = this;
-                  this.$http.get('/orm/api/meta/', {params: {
-                        "class": this.className
-                   }
-                  }).then((response) => {
+                this.$http.get('/orm/api/meta/', {params: {
+                    "class": this.className
+                }
+                }).then((response) => {
                     console.log("Got model meta", response);
-                      vm.meta = response.body;
-                      vm.options = this.meta.attributes;
-                      vm.selected = this.meta.attributes;
+                    vm.meta = response.body;
+                    vm.options = this.meta.attributes;
+                    vm.selected = this.meta.attributes;
 
-                      vm.updateMeta();
-                  }, (response) => {
+                    vm.updateMeta();
+                }, (response) => {
                     // error callback
-                  });
+                });
             }
         },
         data(){
@@ -83,8 +102,13 @@
                 console.log("Change", val);
                 this.loadData();
             },
+            result: function(val) {
+                console.log("Meta form update");
+                this.updateValue(val);
+            },
             value: function(val) {
                 this.updateMeta();
+                Object.assign(this.result, val);
             }
         },
         mounted() {
@@ -98,6 +122,6 @@
             className: {
                 type: String
             },
-       }
+        }
     }
 </script>

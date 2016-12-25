@@ -5,14 +5,6 @@
     <title>@yield("title") - ORM Manager</title>
     <link rel="stylesheet" href="/css/app.css" />
     <script src="https://use.fontawesome.com/0735c4fb7b.js"></script>
-    <style>
-        .fade-enter-active, .fade-leave-active {
-            transition: opacity .5s
-        }
-        .fade-enter, .fade-leave-active {
-            opacity: 0
-        }
-    </style>
 </head>
 <body>
 <div id="app">

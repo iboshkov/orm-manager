@@ -27,7 +27,7 @@ class MetaModelController extends Controller
 
         $relations = $instance->getRelationships();
 
-
+        $primaryKey = $instance->getKeyName();
         //$posts = get_class($instance->{$relations[0]}()->getRelated());
         $types = array_map(function($attr) use ($tableName, $conn) {
             return $conn->getDoctrineColumn($tableName, $attr)->getType()->getName();
@@ -89,7 +89,8 @@ class MetaModelController extends Controller
         $relationModelMap = array_combine($relations, $relatedModels);
 
         return array(
-            "attributes" => $attributeTypeMap,
+            "primaryKey" => $primaryKey,
+            "attributes" => array_values($attributeTypeMap),
             "relationships" => $relationModelMap
         );
     }

@@ -1,7 +1,26 @@
 <template id="modelComponent" xmlns:v-on="http://www.w3.org/1999/xhtml">
     <div>
-        <modal-meta-form :initial-data="activeModel" v-on:close="showMetaModal = false" :show="showMetaModal" :class-name="className"></modal-meta-form>
+        <modal-meta-form v-on:submit="editSubmitted" :initial-data="modalData" v-on:close="showMetaModal = false" :show="showMetaModal" :class-name="className"></modal-meta-form>
+        <confirmation-modal v-on:positive="confirmationModalPositive"
+                            v-on:negative="confirmationModalNegative"
+                            v-on:close="showConfirmationModal = false"
+                            message="Are you sure you want to delete the selected entry ?"
+                            positive-class="is-danger"
+                            positive-label="Delete"
+                            negative-label="Cancel"
+                            :show="showConfirmationModal">
+            <span slot="beforeTitle" class="icon">
+                <i class="fa fa-exclamation-triangle"></i>
+            </span>
+            <span slot="beforePositiveLabel" class="icon">
+                <i class="fa fa-trash"></i>
+            </span>
+            <span slot="beforeNegativeLabel" class="icon">
+                <i class="fa fa-ban"></i>
+            </span>
+        </confirmation-modal>
 
+        Active model: {{ modalData }}
         <nav class="panel">
             <p class="panel-heading">
                 Model: <strong>{{ className | classOnly }}</strong>
@@ -17,7 +36,7 @@
                 <p class="control">
                     <label class="label">Filter by model field</label>
 
-                    <multiselect v-model="selected" :close-on-select="false" :multiple="true" track-by="name" label="name" :options="options">
+                    <multiselect v-model="selected" :close-on-select="false" :multiple="true" track-by="name" label="name" :options="options" />
                 </p>
 
             </div>
@@ -56,7 +75,7 @@
                                     </button>
                                 </p>
                                 <p class="control">
-                                    <button class="button is-danger">
+                                    <button v-on:click="deleteEntry(entry)" class="button is-danger">
                                         <i class="fa fa-trash" aria-hidden="true"></i>
                                     </button>
                                 </p>
@@ -71,9 +90,6 @@
         </nav>
     </div>
 </template>
-
-
-
 <style>
     table {
         table-layout: fixed;
@@ -92,11 +108,24 @@
 
     import BatchControls from "./BatchControls.vue";
     import ModalMetaForm from "./ModalMetaForm.vue";
+    import ConfirmationModal from "./ConfirmationModal.vue";
 
     export default{
-        components: { Multiselect, BatchControls, ModalMetaForm },
+        components: { Multiselect, BatchControls, ModalMetaForm, ConfirmationModal },
         mixins: [mixins],
         methods: {
+            editSubmitted(value) {
+                console.log("submitted", value);
+                var vm = this;
+                function matchPrimaryKey(element) {
+                    return element[vm.meta.primaryKey] == value[vm.meta.primaryKey];
+                };
+
+                var entry = this.data.find(matchPrimaryKey);
+                Object.assign(entry, value);
+                console.log("Matched ", entry);
+                this.modalData = value;
+            },
             updateSelected (newSelected) {
                 this.selected = newSelected
             },
@@ -105,32 +134,44 @@
             },
             editEntry(entry) {
                 console.log("Setting active model to", entry);
-                this.activeModel = entry;
+
+                this.modalData = entry;
                 this.showMetaModal = true;
+            },
+            deleteEntry(entry) {
+                console.log("delete");
+                this.showConfirmationModal = true;
+            },
+            confirmationModalPositive() {
+                console.log("Positive");
+
+            },
+            confirmationModalNegative() {
+                console.log("Negative");
             },
             loadData() {
 
-                  this.$http.get('/orm/api/meta/', {params: {
+                this.$http.get('/orm/api/meta/', {params: {
+                    "class": this.className
+                }
+                }).then((response) => {
+                    console.log("Got model meta", response);
+                    this.meta = response.body;
+                    this.options = this.meta.attributes;
+                    this.selected = this.meta.attributes;
+
+                    this.$http.get('/orm/api/data/', {params: {
                         "class": this.className
                     }
-                  }).then((response) => {
-                    console.log("Got model meta", response);
-                      this.meta = response.body;
-                      this.options = this.meta.attributes;
-                      this.selected = this.meta.attributes;
-
-                      this.$http.get('/orm/api/data/all', {params: {
-                            "class": this.className
-                        }
-                      }).then((response) => {
+                    }).then((response) => {
                         console.log("Got data for meta", response);
                         this.data = response.body;
-                      }, (response) => {
+                    }, (response) => {
                         // error callback
-                      });
-                  }, (response) => {
+                    });
+                }, (response) => {
                     // error callback
-                  });
+                });
             }
         },
         data(){
@@ -139,7 +180,8 @@
                 testValue: 100,
                 selected: null,
                 showMetaModal: false,
-                activeModel: {},
+                showConfirmationModal: false,
+                modalData: {},
                 options: ['list', 'of', 'options'],
                 meta: {
                     type: Object,
@@ -165,7 +207,7 @@
         },
         mounted() {
             console.log("Mounted, testing...");
-              // GET /someUrl
+            // GET /someUrl
             this.loadData();
 
         },
@@ -173,6 +215,6 @@
             className: {
                 type: String
             }
-       }
+        }
     }
 </script>
