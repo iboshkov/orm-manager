@@ -29,6 +29,7 @@ var allModelsView = require('./views/Models/All.vue');
 var singleModelView = require('./views/Models/Single.vue');
 
 const routes = [
+    { path: "/", component: dashView },
     { path: '/dashboard', name: "dashboard", component: dashView },
     { path: '/models', name: 'allModels', component: modelView,
         children: [
@@ -44,7 +45,7 @@ const routes = [
 
 const router = new VueRouter({
     routes // short for routes: routes
-})
+});
 
 const app = new Vue({
     el: '#app',

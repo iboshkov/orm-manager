@@ -14,7 +14,7 @@
 use App\Http\Controllers\ORMManager;
 
 Route::get('dashboard', 'ORMManager\MetaModelController@showDashboard')->name("dashboard");
-Route::get('models', 'ORMManager\MetaModelController@showModels')->name("models");
+Route::get('/', 'ORMManager\MetaModelController@showModels')->name("models");
 
 Route::group(["prefix" => "api"], function($router) {
     // Metadata API
