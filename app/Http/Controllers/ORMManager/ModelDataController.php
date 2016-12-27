@@ -12,6 +12,9 @@ use App\Http\Controllers\ORMManager\MetaModelController;
 
 class ModelDataController extends Controller
 {
+    const ACTION_CREATE = 0;
+    const ACTION_DELETE = 1;
+    const ACTION_UPDATE = 2;
 
     public function getAll(Request $request)
     {
@@ -25,33 +28,44 @@ class ModelDataController extends Controller
     }
 
     public function createEntry(Request $request) {
-        return "Create";
+        return $this->handleRequest($request, self::ACTION_CREATE);
     }
 
-    public function updateEntry(Request $request) {
+    public function handleRequest(Request $request, $action) {
         $modelClass = $request->input("class");
         $modelData = $request->input("data");
-        $meta = MetaModelController::getModelMeta($modelClass);
-        $primaryKeyField = $meta["primaryKey"];
-        $primaryKeyData = $modelData[$primaryKeyField];
+        if ($action === self::ACTION_DELETE || $action == self::ACTION_UPDATE) {
+            $meta = MetaModelController::getModelMeta($modelClass);
+            $primaryKeyField = $meta["primaryKey"];
+            $primaryKeyData = $modelData[$primaryKeyField];
+            $foundModel = $modelClass::findOrFail($primaryKeyData);
+        }
 
-        $foundModel = $modelClass::findOrFail($primaryKeyData);
-        $foundModel->fill($modelData);
-
-        /*
-        foreach ($meta->attributes as $attribute) {
-            echo $foundModel;
-            $foundModel[$attribute] = $modelData[$attribute];
-        }*/
-
-        $foundModel->save();
+        if ($action == self::ACTION_DELETE) {
+            $foundModel->delete();
+        } else if ($action == self::ACTION_UPDATE) {
+            $foundModel->fill($modelData);
+            $foundModel->save();
+        } else if ($action === self::ACTION_CREATE) {
+            $newModel = new $modelClass();
+            $newModel->fill($modelData);
+            $newModel->save();
+            return $newModel;
+        }
 
         return $foundModel;
     }
 
-    public function deleteEntry(Request $request) {
-        return "Delete";
+    public function updateEntry(Request $request) {
+        return $this->handleRequest($request, self::ACTION_UPDATE);
     }
 
+    public function deleteEntry(Request $request) {
+        return $this->handleRequest($request, self::ACTION_DELETE);
+    }
 
+    public function deleteAll(Request $request) {
+        $modelClass = $request->input("class");
+        $modelClass::getQuery()->delete();
+    }
 }

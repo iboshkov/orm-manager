@@ -29,6 +29,7 @@ Route::group(["prefix" => "api"], function($router) {
         Route::post('/', 'ORMManager\ModelDataController@createEntry');
         Route::put('/', 'ORMManager\ModelDataController@updateEntry');
         Route::delete('/', 'ORMManager\ModelDataController@deleteEntry');
+        Route::delete('/all', 'ORMManager\ModelDataController@deleteAll');
     });
 });
 

@@ -1,7 +1,7 @@
 <template id="modelComponent" xmlns:v-on="http://www.w3.org/1999/xhtml">
     <div>
-        <modal-meta-form v-on:submit="editSubmitted" :initial-data="modalData" v-on:close="showMetaModal = false" :show="showMetaModal" :class-name="className"></modal-meta-form>
-        <!--<modal-meta-form v-on:submit="createSubmitted" v-on:close="showCreateModal = false" :show="showCreateModal" :class-name="className"></modal-meta-form>-->
+        <modal-meta-form v-on:submit="editSubmitted" :initial-data="modalData" v-on:close="showEditModal = false" :show="showEditModal" :class-name="className"></modal-meta-form>
+        <modal-meta-form v-on:submit="createSubmitted" v-on:close="showCreateModal = false" :show="showCreateModal" :class-name="className"></modal-meta-form>
         <confirmation-modal v-on:positive="confirmationModalPositive"
                             v-on:negative="confirmationModalNegative"
                             v-on:close="showConfirmationModal = false"
@@ -10,6 +10,7 @@
                             positive-label="Delete"
                             negative-label="Cancel"
                             :show="showConfirmationModal">
+
             <span slot="beforeTitle" class="icon">
                 <i class="fa fa-exclamation-triangle"></i>
             </span>
@@ -21,6 +22,27 @@
             </span>
         </confirmation-modal>
 
+        <confirmation-modal
+
+                v-on:positive="dropAllModalPositive"
+                v-on:negative="showDropAllModal = false"
+                v-on:close="showDropAllModal = false"
+                message="Are you sure you want to delete the selected entry ?"
+                positive-class="is-danger"
+                positive-label="Delete"
+                negative-label="Cancel"
+                :show="showDropAllModal">
+
+            <span slot="beforeTitle" class="icon">
+                <i class="fa fa-exclamation-triangle"></i>
+            </span>
+            <span slot="beforePositiveLabel" class="icon">
+                <i class="fa fa-trash"></i>
+            </span>
+            <span slot="beforeNegativeLabel" class="icon">
+                <i class="fa fa-ban"></i>
+            </span>
+        </confirmation-modal>
         Active model: {{ modalData }}
         <nav class="panel">
             <p class="panel-heading">
@@ -41,7 +63,7 @@
                 </p>
 
             </div>
-            <batch-controls></batch-controls>
+            <batch-controls v-on:new="showCreateModal = true" v-on:drop="dropAll"></batch-controls>
             <div class="panel-block">
                 <table v-if="!isLoading" class="table is-striped is-narrow">
                     <thead>
@@ -89,7 +111,7 @@
 
             </div>
 
-            <batch-controls></batch-controls>
+            <batch-controls v-on:new="showCreateModal = true" v-on:drop="dropAll"></batch-controls>
         </nav>
     </div>
 </template>
@@ -117,6 +139,43 @@
         components: { Multiselect, BatchControls, ModalMetaForm, ConfirmationModal },
         mixins: [mixins],
         methods: {
+            createSubmitted(value) {
+                console.log("Create new", value);
+                var vm = this;
+                // TODO: Abstract into resource.
+                var data = {
+                    "class": vm.className,
+                    "data": value
+                };
+                this.$http.post('/orm/api/data/', data).then((response) => {
+                    console.log("create new  Success", value, response);
+                    // Reload data, just in case.
+                    vm.loadData();
+                }, (response) => {
+                    console.log("create fail", response);
+                    // error callback
+                    // TODO Handle delete fail
+                });
+            },
+            dropAll() {
+                this.showDropAllModal= true;
+            },
+            dropAllModalPositive() {
+                var vm = this;
+                // TODO: Abstract into resource.
+                var data = {
+                    "class": vm.className
+                };
+                this.$http.delete('/orm/api/data/all', {params: data}).then((response) => {
+                    console.log("delete all Success", response);
+                    // Reload data, just in case.
+                    vm.loadData();
+                }, (response) => {
+                    console.log("delete fail", response);
+                    // error callback
+                    // TODO Handle delete fail
+                });
+            },
             editSubmitted(value) {
                 console.log("submitted", value);
                 var vm = this;
@@ -134,9 +193,12 @@
                     "data": value
                 }).then((response) => {
                     console.log("edit Success", response, vm.modalData);
+                    // Reload data, just in case.
+                    vm.loadData();
                 }, (response) => {
                     console.log("edit fail", response);
                     // error callback
+                    // TODO Handle edit fail
                 });
             },
             updateSelected (newSelected) {
@@ -149,14 +211,31 @@
                 console.log("Setting active model to", entry);
 
                 this.modalData = entry;
-                this.showMetaModal = true;
+                this.showEditModal = true;
             },
             deleteEntry(entry) {
                 console.log("delete");
+                this.toDelete = entry;
                 this.showConfirmationModal = true;
             },
             confirmationModalPositive() {
                 console.log("Positive");
+                var vm = this;
+                var data = {
+                    "class": vm.className,
+                    "data": vm.toDelete
+                };
+                console.log("Delete", data);
+                // TODO: Abstract into resource.
+                this.$http.delete('/orm/api/data/', {params: data}).then((response) => {
+                    console.log("delete Success", response, vm.toDelete);
+                    // Reload data, just in case.
+                    vm.loadData();
+                }, (response) => {
+                    console.log("delete fail", response);
+                    // error callback
+                    // TODO Handle delete fail
+                });
 
             },
             confirmationModalNegative() {
@@ -196,9 +275,12 @@
                 msg:'hello vue',
                 testValue: 100,
                 selected: null,
-                showMetaModal: false,
+                showEditModal: false,
+                showCreateModal: false,
                 showConfirmationModal: false,
+                showDropAllModal: false,
                 modalData: {},
+                toDelete: null,
                 options: ['list', 'of', 'options'],
                 isLoading: true,
                 meta: {

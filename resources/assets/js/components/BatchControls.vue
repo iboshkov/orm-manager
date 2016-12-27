@@ -2,7 +2,7 @@
     <div class="panel-block">
         <div class="columns">
             <div class="column">
-                <button class="button is-primary is-fullwidth is-outlined">
+                <button  v-on:click="createNew"  class="button is-primary is-fullwidth is-outlined">
                         <span class="icon is-small">
                             <i class="fa fa-plus" aria-hidden="true"></i>
                         </span>
@@ -10,7 +10,7 @@
                 </button>
             </div>
             <div class="column">
-                <button class="button is-danger is-fullwidth is-outlined">
+                <button v-on:click="deleteAll" class="button is-danger is-fullwidth is-outlined">
                         <span class="icon is-small">
                             <i class="fa fa-warning" aria-hidden="true"></i>
                         </span>
@@ -23,9 +23,12 @@
 
 <script>
     export default{
-        data(){
-            return{
-                msg:'hello vue'
+        methods: {
+            createNew() {
+                this.$emit("new");
+            },
+            deleteAll() {
+                this.$emit("drop");
             }
         },
         components:{

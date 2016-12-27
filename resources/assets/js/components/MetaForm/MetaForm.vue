@@ -6,7 +6,7 @@
             </slot>
         </p>
         <div class="panel-block">
-            <meta-field class="meta-field" v-model="result[attr.name]" v-for="attr in meta.attributes" :meta="attr"></meta-field>
+            <meta-field class="meta-field" v-model="result[attr.name]" v-for="attr in nonKeyAttributes" :meta="attr"></meta-field>
         </div>
         <p class="panel-heading">
             Relationships:
@@ -42,7 +42,20 @@
     export default{
         components: { MetaField },
         mixins: [mixins],
-
+        computed: {
+            nonKeyAttributes: function() {
+                var vm = this;
+                if (!vm.meta || !vm.meta.attributes)
+                    return [];
+                var attrs = [];
+                this.meta.attributes.forEach(function(attr) {
+                    if (attr.name != vm.meta.primaryKey) {
+                        attrs.push(attr);
+                    }
+                });
+                return attrs;
+            }
+        },
         methods: {
             submit() {
                 console.log("Form firing submit", this.result);
@@ -53,11 +66,9 @@
             },
             updateMeta () {
                 var vm = this;
-                if (vm.meta.attributes && vm.meta.attributes.length > 0) {
-                    vm.meta.attributes.forEach(function(attr){
-                        Vue.set(vm.result, attr.name,  vm.value[attr.name] || "");
-                    });
-                }
+                vm.nonKeyAttributes.forEach(function(attr){
+                    Vue.set(vm.result, attr.name,  vm.value[attr.name] || "");
+                });
             },
             updateValue: function(val) {
                 console.log("Meta form update", val);
@@ -101,6 +112,11 @@
             className: function(val) {
                 console.log("Change", val);
                 this.loadData();
+            },
+            show: function(val) {
+                if (!val) {
+                    this.result = {};
+                }
             },
             result: function(val) {
                 console.log("Meta form update");
