@@ -1,6 +1,7 @@
 <template id="modelComponent" xmlns:v-on="http://www.w3.org/1999/xhtml">
     <div>
         <modal-meta-form v-on:submit="editSubmitted" :initial-data="modalData" v-on:close="showMetaModal = false" :show="showMetaModal" :class-name="className"></modal-meta-form>
+        <!--<modal-meta-form v-on:submit="createSubmitted" v-on:close="showCreateModal = false" :show="showCreateModal" :class-name="className"></modal-meta-form>-->
         <confirmation-modal v-on:positive="confirmationModalPositive"
                             v-on:negative="confirmationModalNegative"
                             v-on:close="showConfirmationModal = false"
@@ -42,7 +43,7 @@
             </div>
             <batch-controls></batch-controls>
             <div class="panel-block">
-                <table class="table is-striped is-narrow">
+                <table v-if="!isLoading" class="table is-striped is-narrow">
                     <thead>
                     <tr>
                         <th v-for="attr in selected">
@@ -60,7 +61,7 @@
                     </tr>
                     </tfoot>
                     <tbody>
-                    <tr v-for="entry in data">
+                    <tr v-if="!isLoading" v-for="entry in data">
                         <td v-for="attr in selected">
                             <span>{{ entry[attr.name] | truncate(testValue) }}</span>
                         </td>
@@ -84,6 +85,8 @@
                     </tr>
                     </tbody>
                 </table>
+                <a v-else class="button is-loading is-fullwidth">Loading</a>
+
             </div>
 
             <batch-controls></batch-controls>
@@ -125,6 +128,16 @@
                 Object.assign(entry, value);
                 console.log("Matched ", entry);
                 this.modalData = value;
+                // TODO: Abstract into resource.
+                this.$http.put('/orm/api/data/', {
+                    "class": vm.className,
+                    "data": value
+                }).then((response) => {
+                    console.log("edit Success", response, vm.modalData);
+                }, (response) => {
+                    console.log("edit fail", response);
+                    // error callback
+                });
             },
             updateSelected (newSelected) {
                 this.selected = newSelected
@@ -150,27 +163,31 @@
                 console.log("Negative");
             },
             loadData() {
-
-                this.$http.get('/orm/api/meta/', {params: {
-                    "class": this.className
+                var vm = this;
+                vm.isLoading = true;
+                vm.$http.get('/orm/api/meta/', {params: {
+                    "class": vm.className
                 }
                 }).then((response) => {
                     console.log("Got model meta", response);
-                    this.meta = response.body;
-                    this.options = this.meta.attributes;
-                    this.selected = this.meta.attributes;
+                    vm.meta = response.body;
+                    vm.options = vm.meta.attributes;
+                    vm.selected = vm.meta.attributes;
 
-                    this.$http.get('/orm/api/data/', {params: {
-                        "class": this.className
+                    vm.$http.get('/orm/api/data/', {params: {
+                        "class": vm.className
                     }
                     }).then((response) => {
                         console.log("Got data for meta", response);
-                        this.data = response.body;
+                        vm.data = response.body;
+                        vm.isLoading = false;
                     }, (response) => {
                         // error callback
+                        vm.isLoading = false;
                     });
                 }, (response) => {
                     // error callback
+                    vm.isLoading = false;
                 });
             }
         },
@@ -183,6 +200,7 @@
                 showConfirmationModal: false,
                 modalData: {},
                 options: ['list', 'of', 'options'],
+                isLoading: true,
                 meta: {
                     type: Object,
                     default: function() {

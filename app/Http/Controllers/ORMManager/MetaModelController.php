@@ -18,7 +18,7 @@ class MetaModelController extends Controller
         return null;
     }
 
-    protected function getModelMeta($model=null, $includeRelations = true) {
+    public static function getModelMeta($model=null, $includeRelations = true) {
         $conn = DB::connection();
 
         $instance = new $model();

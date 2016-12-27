@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use App\Providers\ORMHelper;
+use App\Http\Controllers\ORMManager\MetaModelController;
+
 
 class ModelDataController extends Controller
 {
@@ -27,7 +29,24 @@ class ModelDataController extends Controller
     }
 
     public function updateEntry(Request $request) {
-        return "Update";
+        $modelClass = $request->input("class");
+        $modelData = $request->input("data");
+        $meta = MetaModelController::getModelMeta($modelClass);
+        $primaryKeyField = $meta["primaryKey"];
+        $primaryKeyData = $modelData[$primaryKeyField];
+
+        $foundModel = $modelClass::findOrFail($primaryKeyData);
+        $foundModel->fill($modelData);
+
+        /*
+        foreach ($meta->attributes as $attribute) {
+            echo $foundModel;
+            $foundModel[$attribute] = $modelData[$attribute];
+        }*/
+
+        $foundModel->save();
+
+        return $foundModel;
     }
 
     public function deleteEntry(Request $request) {
