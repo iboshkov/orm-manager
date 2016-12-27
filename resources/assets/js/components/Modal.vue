@@ -33,6 +33,7 @@
         },
         mounted() {
             console.log("Modal mounted");
+            document.body.appendChild(this.$el);
         },
 
         props: {
