@@ -8,14 +8,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use App\Providers\ORMHelper;
 use App\Http\Controllers\ORMManager\MetaModelController;
-
+use Carbon\Carbon;
 
 class ModelDataController extends Controller
 {
     const ACTION_CREATE = 0;
     const ACTION_DELETE = 1;
     const ACTION_UPDATE = 2;
-
+    const DATETIME_FORMAT = "Y-m-d H:i:s";
     public function getAll(Request $request)
     {
         $modelClass = $request["class"];
@@ -34,8 +34,8 @@ class ModelDataController extends Controller
     public function handleRequest(Request $request, $action) {
         $modelClass = $request->input("class");
         $modelData = $request->input("data");
+        $meta = MetaModelController::getModelMeta($modelClass);
         if ($action === self::ACTION_DELETE || $action == self::ACTION_UPDATE) {
-            $meta = MetaModelController::getModelMeta($modelClass);
             $primaryKeyField = $meta["primaryKey"];
             $primaryKeyData = $modelData[$primaryKeyField];
             $foundModel = $modelClass::findOrFail($primaryKeyData);
@@ -47,8 +47,20 @@ class ModelDataController extends Controller
             $foundModel->fill($modelData);
             $foundModel->save();
         } else if ($action === self::ACTION_CREATE) {
+            var_dump($meta);
             $newModel = new $modelClass();
-            $newModel->fill($modelData);
+
+            foreach ($meta["attributes"] as $attr) {
+                $actualAttr = $attr["name"];
+                if ($attr["type"] == "datetime") {
+                    echo "Data: " . $modelData[$actualAttr];
+                    $newModel->$actualAttr = Carbon::createFromFormat(self::DATETIME_FORMAT, $modelData[$actualAttr]);
+                } else {
+                    $newModel->$actualAttr = $modelData[$actualAttr];
+                }
+            }
+
+            //$newModel->fill($modelData);
             $newModel->save();
             return $newModel;
         }

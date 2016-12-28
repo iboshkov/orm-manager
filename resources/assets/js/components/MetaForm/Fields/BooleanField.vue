@@ -1,7 +1,7 @@
 <template>
     <p class="control">
         <label class="checkbox">
-            <input ref="input" v-on:change="updateValue($event.target.checked)" :checked="value" type="checkbox">
+            <input ref="input" v-on:change="updateValue($event.target.checked)" :checked="checked" type="checkbox">
             {{ meta.name | humanize }}
         </label>
     </p>
@@ -10,11 +10,12 @@
 <script>
     export default {
         mounted() {
-            console.log('Bool control mounted.')
+            console.log('Bool control mounted.');
+            this.updateValue(this.value);
         },
         computed: {
-            toBool() {
-                return this.value.toBoolean();
+            checked() {
+                return this.value ? "on" : "off";
             }
         },
         methods: {

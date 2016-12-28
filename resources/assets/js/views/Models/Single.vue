@@ -14,11 +14,6 @@
             </tabs>
         </div>
 </template>
-<style>
-    body{
-        background-color:#ff0000;
-    }
-</style>
 <script>
     import { Tabs, TabPane } from 'vue-bulma-tabs';
     import MetaForm from "../../components/MetaForm/MetaForm.vue";

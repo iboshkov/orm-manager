@@ -16,7 +16,7 @@
 
     export default {
         mounted() {
-
+            this.rebind();
         },
 
         watch: {
@@ -36,10 +36,13 @@
             rebind() {
                 var vm = this;
                 var targetDate = moment(vm.value, vm.dateFormat).toDate();
+                if (!vm.value) {
+                    targetDate = new Date();
+                }
                 if (!vm.picker) {
                     var el = vm.$el.querySelector(".flatpickr");
 
-                    this.picker = Flatpickr(el, {
+                    vm.picker = Flatpickr(el, {
                         defaultDate: targetDate,
                         enableTime: true,
                         enableSeconds: true,
@@ -68,7 +71,7 @@
             },
             enableTime: {
                 type: Boolean,
-                default: true
+                    default: true
             },
             dateFormat: {
                 type: String,
