@@ -11,7 +11,7 @@
                     <li v-for="model in metaList"><router-link :to="{name: 'singleModel', params:{ id: model }}" active-class="is-active">1{{ model }}</router-link></li>
                 </ul>
             </div>
-            <transition name="fade">
+            <transition name="bounce">
                 <router-view></router-view>
             </transition>
         </app-layout>

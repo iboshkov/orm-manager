@@ -4,7 +4,7 @@
         format: {{dateFormat}}
         val: {{value}}
         <p class="control">
-            <input class="input flatpickr" :value="value" type="text" placeholder="Select Date..">
+            <input  class="input flatpickr" :value="value" type="text" placeholder="Select a date...">
         </p>
     </div>
 </template>
@@ -35,9 +35,14 @@
         methods: {
             rebind() {
                 var vm = this;
-                var targetDate = moment(vm.value, vm.dateFormat).toDate();
+                var targetDate = null;
                 if (!vm.value) {
                     targetDate = new Date();
+                    vm.updateValue(moment().format(vm.dateFormat));
+                } else {
+                    var mdate = moment(vm.value, vm.dateFormat);
+                    vm.updateValue(mdate.format(vm.dateFormat));
+                    targetDate = moment(vm.value, vm.dateFormat).toDate();
                 }
                 if (!vm.picker) {
                     var el = vm.$el.querySelector(".flatpickr");
@@ -55,7 +60,6 @@
 
                 vm.picker.jumpToDate(targetDate);
                 console.log('Rebinding datetime control.', vm.picker, targetDate);
-
                 //this.picker.jumpToDate(d);
             },
             updateValue: function (value) {

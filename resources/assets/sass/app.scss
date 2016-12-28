@@ -9,5 +9,13 @@
 // Flatpickr
 @import "../../../node_modules/flatpickr/dist/flatpickr";
 
+// Flatpickr
+//@import "../../../node_modules/animate.css/animate";
+@import "../../../node_modules/vue2-animate/dist/vue2-animate";
+
 // Bulma
 @import "../../../node_modules/bulma/bulma";
+
+[v-cloak] {
+  display: none;
+}

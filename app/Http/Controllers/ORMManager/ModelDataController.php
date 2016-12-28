@@ -20,10 +20,12 @@ class ModelDataController extends Controller
     {
         $modelClass = $request["class"];
         $models = $modelClass::all();
+        $meta = MetaModelController::getModelMeta($modelClass);
 
         foreach ($models as $minst) {
             $minst->makeVisible($minst->getHidden());
         }
+
         return $models;
     }
 
@@ -35,8 +37,8 @@ class ModelDataController extends Controller
         $modelClass = $request->input("class");
         $modelData = $request->input("data");
         $meta = MetaModelController::getModelMeta($modelClass);
+        $primaryKeyField = $meta["primaryKey"];
         if ($action === self::ACTION_DELETE || $action == self::ACTION_UPDATE) {
-            $primaryKeyField = $meta["primaryKey"];
             $primaryKeyData = $modelData[$primaryKeyField];
             $foundModel = $modelClass::findOrFail($primaryKeyData);
         }
@@ -52,6 +54,11 @@ class ModelDataController extends Controller
 
             foreach ($meta["attributes"] as $attr) {
                 $actualAttr = $attr["name"];
+                if ($actualAttr == $primaryKeyField)
+                    continue;
+
+                // Todo: handle other special cases
+
                 if ($attr["type"] == "datetime") {
                     echo "Data: " . $modelData[$actualAttr];
                     $newModel->$actualAttr = Carbon::createFromFormat(self::DATETIME_FORMAT, $modelData[$actualAttr]);
@@ -59,7 +66,22 @@ class ModelDataController extends Controller
                     $newModel->$actualAttr = $modelData[$actualAttr];
                 }
             }
+            foreach ($meta["relationships"] as $rel) {
+                $relType = $rel["type"];
+                $relName = $rel["name"];
+                $otherModelClass = $rel["model"];
 
+                if ($relType == "BelongsTo") {
+                    $otherModelKey = $rel["otherKey"];
+                    $foreignKeyField = $rel["foreignKey"];
+                    $foreignKey = $modelData[$foreignKeyField];
+
+                    $otherModel = $otherModelClass::find($foreignKey);
+                    $newModel->$relName()->associate($otherModel);
+//                    $otherModel->$relName()->associate($newModel);
+//                    $otherModel->save();
+                }
+            }
             //$newModel->fill($modelData);
             $newModel->save();
             return $newModel;

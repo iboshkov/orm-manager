@@ -10,7 +10,6 @@
                 </tab-pane>
                 <tab-pane label="Utilities">
                 </tab-pane>
-                <tab-pane label="Videos">Video Tab</tab-pane>
             </tabs>
         </div>
 </template>

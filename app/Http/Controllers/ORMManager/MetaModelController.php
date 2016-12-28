@@ -47,6 +47,7 @@ class MetaModelController extends Controller
             $relationType = explode('\\', get_class($relation));
 
             $result = array(
+                "name" => $rel,
                 "model" => get_class($relatedModel),
                 "type" => array_pop($relationType)
             );
@@ -89,9 +90,10 @@ class MetaModelController extends Controller
         $relationModelMap = array_combine($relations, $relatedModels);
 
         return array(
+            "class" => $model,
             "primaryKey" => $primaryKey,
             "attributes" => array_values($attributeTypeMap),
-            "relationships" => $relationModelMap
+            "relationships" => array_values($relationModelMap)
         );
     }
 

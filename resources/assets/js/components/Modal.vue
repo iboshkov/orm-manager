@@ -1,27 +1,30 @@
 <template>
-    <div :class="['modal', {'is-active' : show}]">
+    <transition name="fade" :appear="show">
+        <div v-if="show" :class="['modal', 'is-active']">
+            <div v-on:click="close()" class="modal-background"></div>
+            <transition name="bounce" :appear="show">
 
-        <div v-on:click="close()" class="modal-background"></div>
-        <div class="modal-card">
-            <header v-if="includeHeader" class="modal-card-head">
-                <slot name="beforeTitle"></slot>
-                <span v-if="showTitle" class="modal-card-title"><strong>{{ title }}</strong></span>
-                <slot name="afterTitle"></slot>
+                <div class="modal-card">
+                    <header v-if="includeHeader" class="modal-card-head">
+                        <slot name="beforeTitle"></slot>
+                        <span v-if="showTitle" class="modal-card-title"><strong>{{ title }}</strong></span>
+                        <slot name="afterTitle"></slot>
 
-                <button v-on:click="close()" class="delete"></button>
-            </header>
+                        <button v-on:click="close()" class="delete"></button>
+                    </header>
 
-            <section class="modal-card-body">
-                {{ message }}
-                <slot></slot>
-            </section>
+                    <section class="modal-card-body">
+                        {{ message }}
+                        <slot></slot>
+                    </section>
 
-            <footer v-if="includeFooter" class="modal-card-foot">
-                <slot name="footer"></slot>
-            </footer>
+                    <footer v-if="includeFooter" class="modal-card-foot">
+                        <slot name="footer"></slot>
+                    </footer>
+                </div>
+            </transition>
         </div>
-
-    </div>
+    </transition>
 </template>
 
 <script>

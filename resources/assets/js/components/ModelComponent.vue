@@ -1,7 +1,7 @@
 <template id="modelComponent" xmlns:v-on="http://www.w3.org/1999/xhtml">
     <div>
         <modal-meta-form v-on:submit="editSubmitted" :initial-data="modalData" v-on:close="showEditModal = false" :show="showEditModal" :class-name="className"></modal-meta-form>
-        <modal-meta-form v-on:submit="createSubmitted" v-on:close="showCreateModal = false" :show="showCreateModal" :class-name="className"></modal-meta-form>
+        <modal-meta-form  :initial-data="{}" v-on:submit="createSubmitted" v-on:close="showCreateModal = false" :show="showCreateModal" :class-name="className"></modal-meta-form>
         <confirmation-modal v-on:positive="confirmationModalPositive"
                             v-on:negative="confirmationModalNegative"
                             v-on:close="showConfirmationModal = false"
@@ -43,7 +43,6 @@
                 <i class="fa fa-ban"></i>
             </span>
         </confirmation-modal>
-        Active model: {{ modalData }}
         <nav class="panel">
             <p class="panel-heading">
                 Model: <strong>{{ className | classOnly }}</strong>
@@ -63,7 +62,7 @@
                 </p>
 
             </div>
-            <batch-controls v-on:new="showCreateModal = true" v-on:drop="dropAll"></batch-controls>
+            <batch-controls v-if="!isLoading" v-on:new="createNew()" v-on:drop="dropAll"></batch-controls>
             <div class="panel-block">
                 <table v-if="!isLoading" class="table is-striped is-narrow">
                     <thead>
@@ -111,7 +110,8 @@
 
             </div>
 
-            <batch-controls v-on:new="showCreateModal = true" v-on:drop="dropAll"></batch-controls>
+            <batch-controls v-if="!isLoading" v-on:new="createNew()" v-on:drop="dropAll"></batch-controls>
+
         </nav>
     </div>
 </template>
@@ -139,6 +139,10 @@
         components: { Multiselect, BatchControls, ModalMetaForm, ConfirmationModal },
         mixins: [mixins],
         methods: {
+            createNew() {
+                this.showCreateModal = true;
+
+            },
             createSubmitted(value) {
                 console.log("Create new", value);
                 var vm = this;

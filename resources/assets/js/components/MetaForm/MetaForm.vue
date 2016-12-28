@@ -5,29 +5,38 @@
                 Attributes for <span :title="className"><strong>{{ className | classOnly }}</strong></span>:
             </slot>
         </p>
+        <transition name="fade">
+            <div v-if="isLoading" class="panel-block">
+                <div class="button is-loading is-fullwidth">Loading model data...</div>
+            </div>
+            <div v-else>
+                <div class="panel-block">
+                    <meta-field class="meta-field" v-model="result[attr.name]" v-for="attr in nonKeyAttributes" :meta="attr"></meta-field>
+                </div>
+                <p class="panel-heading">
+                    Relationships:
+                </p>
+                <div class="panel-block">
+                    <meta-field class="meta-field" v-model="result[attr.foreignKey]" v-for="attr in meta.relationships" :meta="attr"></meta-field>
+                </div>
+            </div>
+        </transition>
+
         <div class="panel-block">
-            <meta-field class="meta-field" v-model="result[attr.name]" v-for="attr in nonKeyAttributes" :meta="attr"></meta-field>
-        </div>
-        <p class="panel-heading">
-            Relationships:
-        </p>
-        <div class="panel-block">
-            <p v-for="attr in meta.relationships">{{ attr.type }} {{ attr.model }}</p>
-        </div>
-        <br/>
-        <div class="control">
+            <div class="control">
 
-            <a v-on:click="submit()" class="button is-primary">Save changes</a>
-            <a v-on:click="cancel()" class="button">Cancel</a>
+                <a v-on:click="submit()" class="button is-primary">Save changes</a>
+                <a v-on:click="cancel()" class="button">Cancel</a>
 
+            </div>
         </div>
 
-        <slot name="form-footer"></slot>
-
-        Form result:<br/>
+        <!---->
+        <!--Form result:<br/>-->
         {{ result }}
-        <br/>
-        Initial value: {{ value }}
+        <!--<br/>-->
+        <!--Initial value: {{ value }}-->
+        <slot name="form-footer"></slot>
     </nav>
 </template>
 <style scoped>
@@ -66,12 +75,23 @@
             },
             updateMeta () {
                 var vm = this;
+                if (!vm.meta)
+                    return;
+
                 vm.nonKeyAttributes.forEach(function(attr){
                     Vue.set(vm.result, attr.name,  vm.value[attr.name] || "");
                 });
+                if (vm.meta.relationships) {
+                    vm.meta.relationships.forEach(function(attr){
+                        if (attr.type == "BelongsTo") {
+                            console.log("Setting foreign key for attr: ", attr.type);
+                            Vue.set(vm.result, attr.foreignKey,  vm.value[attr.foreignKey] || "");
+                        }
+                    });
+                }
             },
             updateValue: function(val) {
-                console.log("Meta form update", val);
+                console.log("Meta form attr  update", val);
                 this.$emit("input", val);
             },
             loadData() {
@@ -86,6 +106,7 @@
                     vm.selected = this.meta.attributes;
 
                     vm.updateMeta();
+                    vm.isLoading = false;
                 }, (response) => {
                     // error callback
                 });
@@ -93,6 +114,7 @@
         },
         data(){
             return {
+                isLoading: true,
                 result: {
 
                 },

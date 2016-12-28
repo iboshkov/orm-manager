@@ -37,7 +37,7 @@ const routes = [
                 // render /models/:id
                 path: '/manage/:id',
                 name: 'singleModel',
-                component: singleModelView
+                component: singleModelView,
             }
         ]
     }
