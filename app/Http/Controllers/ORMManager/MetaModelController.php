@@ -66,8 +66,10 @@ class MetaModelController extends Controller
                 $result["otherKeyFull"] = $relation->getQualifiedOtherKeyName();
             if (method_exists($relation, "getParentKey"))
                 $result["parentKey"] = $relation->getParentKey();
-            if (method_exists($relation, "getQualifiedParentKeyName"))
+            if (method_exists($relation, "getHasCompareKey"))
                 $result["parentKeyFull"] = $relation->getQualifiedParentKeyName();
+            if (method_exists($relation, "getHasCompareKey"))
+                $result["hasCompareKey"] = $relation->getHasCompareKey();
             $foreign = $result["foreignKey"] ?: $result["foreignKeyPlain"];
             if ($foreign) {
                 $toDelete = -1;

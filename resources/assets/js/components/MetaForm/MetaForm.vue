@@ -17,7 +17,7 @@
                     Relationships:
                 </p>
                 <div class="panel-block">
-                    <meta-field class="meta-field" v-model="result[attr.foreignKey]" v-for="attr in meta.relationships" :meta="attr"></meta-field>
+                    <meta-field class="meta-field" v-model="result.relationships[attr.name]['param']" v-for="attr in meta.relationships" :meta="attr"></meta-field>
                 </div>
             </div>
         </transition>
@@ -82,12 +82,20 @@
                     Vue.set(vm.result, attr.name,  vm.value[attr.name] || "");
                 });
                 if (vm.meta.relationships) {
-                    vm.meta.relationships.forEach(function(attr){
+                    var relationships = {};
+                    vm.meta.relationships.forEach(function(attr) {
+                        // Init the relationships field with an empty array
+                        var rel = {};
+                        Vue.set(rel, "type", attr.type);
                         if (attr.type == "BelongsTo") {
                             console.log("Setting foreign key for attr: ", attr.type);
-                            Vue.set(vm.result, attr.foreignKey,  vm.value[attr.foreignKey] || "");
+                            Vue.set(rel, "param",  vm.value[attr.foreignKey] || "");
                         }
+
+                        Vue.set(relationships, attr.name, rel);
                     });
+                    Vue.set(vm.result, "relationships", relationships);
+                    console.log("Result object: ", vm.result);
                 }
             },
             updateValue: function(val) {

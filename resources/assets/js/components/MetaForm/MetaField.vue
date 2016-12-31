@@ -15,6 +15,9 @@
         <template v-if="meta.type == 'BelongsTo'">
             <belongs-to :value="value" v-on:input="updateValue" :meta="meta" />
         </template>
+        <template v-if="meta.type == 'HasMany'">
+            <has-many :value="value" v-on:input="updateValue" :meta="meta" />
+        </template>
     </div>
 </template>
 
@@ -24,10 +27,11 @@
     import TextField from './Fields/TextField.vue';
     import DateTimeField from './Fields/DateTimeField.vue';
     import BelongsTo from './Fields/Relation/BelongsTo.vue';
+    import HasMany from './Fields/Relation/HasMany.vue';
 
 
     export default {
-        components: { StringField, BooleanField, TextField, DateTimeField, BelongsTo },
+        components: { StringField, BooleanField, TextField, DateTimeField, BelongsTo, HasMany },
         mounted() {
             console.log('Meta field mounted.', this.value);
         },
