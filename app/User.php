@@ -34,7 +34,12 @@ class User extends Authenticatable
         return $this->hasMany('App\Blog\Post', 'author_id');
     }
 
+        
+    public function groups() {
+        return $this->belongsToMany('App\Group', 'groups_users', 'user_id', 'group_id');
+    }
+
     protected $relationships = [
-        "posts"
+        "posts", "groups"
     ];
 }

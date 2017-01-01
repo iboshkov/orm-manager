@@ -19,12 +19,21 @@ class ModelDataController extends Controller
     public function getAll(Request $request)
     {
         $modelClass = $request["class"];
-        $models = $modelClass::all();
         $meta = MetaModelController::getModelMeta($modelClass);
+        $relationNames = [];
+        foreach ($meta["relationships"] as $rel) {
+            $rname = $rel["name"];
+            array_push($relationNames, $rname);
+
+        }
+
+
+        $models = $modelClass::with($relationNames)->get();
 
         foreach ($models as $minst) {
             $minst->makeVisible($minst->getHidden());
         }
+
 
         return $models;
     }
@@ -38,19 +47,22 @@ class ModelDataController extends Controller
         $modelData = $request->input("data");
         $meta = MetaModelController::getModelMeta($modelClass);
         $primaryKeyField = $meta["primaryKey"];
+        $modelInstance = null;
+        
         if ($action === self::ACTION_DELETE || $action == self::ACTION_UPDATE) {
             $primaryKeyData = $modelData[$primaryKeyField];
-            $foundModel = $modelClass::findOrFail($primaryKeyData);
+            $modelInstance = $modelClass::findOrFail($primaryKeyData);
         }
+        
 
         if ($action == self::ACTION_DELETE) {
-            $foundModel->delete();
+            $modelInstance->delete();
         } else if ($action == self::ACTION_UPDATE) {
-            $foundModel->fill($modelData);
-            $foundModel->save();
+            $modelInstance->fill($modelData);
+            $modelInstance->save();
         } else if ($action === self::ACTION_CREATE) {
             var_dump($meta);
-            $newModel = new $modelClass();
+            $modelInstance = new $modelClass();
 
             foreach ($meta["attributes"] as $attr) {
                 $actualAttr = $attr["name"];
@@ -61,11 +73,14 @@ class ModelDataController extends Controller
 
                 if ($attr["type"] == "datetime") {
                     echo "Data: " . $modelData[$actualAttr];
-                    $newModel->$actualAttr = Carbon::createFromFormat(self::DATETIME_FORMAT, $modelData[$actualAttr]);
+                    $modelInstance->$actualAttr = Carbon::createFromFormat(self::DATETIME_FORMAT, $modelData[$actualAttr]);
                 } else {
-                    $newModel->$actualAttr = $modelData[$actualAttr];
+                    $modelInstance->$actualAttr = $modelData[$actualAttr];
                 }
             }
+
+
+            /*
             foreach ($meta["relationships"] as $rel) {
                 $relType = $rel["type"];
                 $relName = $rel["name"];
@@ -77,17 +92,81 @@ class ModelDataController extends Controller
                     $foreignKey = $modelData[$foreignKeyField];
 
                     $otherModel = $otherModelClass::find($foreignKey);
-                    $newModel->$relName()->associate($otherModel);
-//                    $otherModel->$relName()->associate($newModel);
+                    $modelInstance->$relName()->associate($otherModel);
+//                    $otherModel->$relName()->associate($modelInstance);
 //                    $otherModel->save();
-                }
+                }                
             }
-            //$newModel->fill($modelData);
-            $newModel->save();
-            return $newModel;
+            */
+            
+            //$modelInstance->fill($modelData);
+
         }
 
-        return $foundModel;
+        if ($action == self::ACTION_CREATE || $action == self::ACTION_UPDATE) {
+            $rels = $modelData["relationships"];
+
+            foreach ($rels as $relName => $relData) {
+                $rtype = $relData["type"] ;
+                $otherModelKey = $relData["param"];
+                $otherModelClass = $relData["model"];
+                if ($rtype == "BelongsTo") {
+                    $otherModel = $otherModelClass::find($otherModelKey);
+
+                    $modelInstance->$relName()->associate($otherModel);
+                } 
+            }
+
+            $modelInstance->save();
+
+            // Deal with the relationships that require an id.
+            foreach ($rels as $relName => $relData) {
+                $rtype = $relData["type"] ;
+                $otherModelKey = $relData["param"];
+                $otherModelClass = $relData["model"];
+
+                if ($rtype == "HasMany") {
+                  $otherModelMeta = MetaModelController::getModelMeta($otherModelClass);
+                  $otherPkey = $otherModelMeta["primaryKey"];
+                  $currentItems = $modelInstance->$relName()->get();
+                  $fkey = $relData["foreignKeyPlain"];
+                  $thisKey = $modelInstance[$primaryKeyField];
+
+                  foreach ($currentItems as $item) {
+                    // TODO: Make models with nullable attributes dangle.
+                    //$item[$fkey] = $modelInstance[$primaryKeyField];
+                    $key = $item[$otherPkey];
+                    
+                    // Now in new items, delete it.
+                    if (!in_array($key, $otherModelKey)) {
+                      $item->delete();
+                    } 
+                  }
+                  
+                  //$currentItems->update([$fkey => null]);
+                  $newItems = $otherModelClass::find($otherModelKey);
+                  foreach ($newItems as $item) {
+                    $item[$fkey] = $modelInstance[$primaryKeyField];
+                    $item->save();
+                  }
+                  //return $newItems;
+
+                  //$newItems->update([$fkey => $modelInstance[$primaryKeyField]]);
+                  
+                  /* foreach ($currentItems as $item) {
+                    $item->setAttribute($fkey, null);
+                  }*/
+                  //return $currentItems->get();// $otherModelClass::find($otherModelKey);//$modelInstance->$relName()->associate($relData["param";
+                  $modelInstance->save();
+                }
+            }
+
+
+            
+            return $modelInstance;
+        } 
+
+        return $modelInstance;
     }
 
     public function updateEntry(Request $request) {

@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use Carbon\Carbon;
+use App\User;
 
 class UsersTableSeeder extends Seeder
 {
@@ -21,5 +22,7 @@ class UsersTableSeeder extends Seeder
                 'updated_at' => Carbon::now()->format('Y-m-d H:i:s')
             ]);
         }
+
+        User::find(5)->groups()->attach([7, 8, 9]);
     }
 }
