@@ -8,8 +8,6 @@
                     </a>
                 </div>
                 <div class="nav-right">
-                    <router-link active-class="is-active" class="nav-item is-brand" :to="{name: 'dashboard'}">Home</router-link>
-                    <router-link active-class="is-active" class="nav-item is-brand" to="/models">Models</router-link>
                     <slot name="header-nav"></slot>
                 </div>
             </div>
@@ -23,8 +21,7 @@
                                 General
                             </p>
                             <ul class="menu-list">
-                                <li><router-link active-class="is-active" :to="{name: 'dashboard'}">Home</router-link></li>
-                                <li><router-link active-class="is-active" to="/models">Models</router-link></li>
+                                <li><router-link active-class="is-active" :to="{name: 'dashHome'}">Home</router-link></li>
                             </ul>
 
                             <slot name="sidebar-nav"></slot>

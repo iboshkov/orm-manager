@@ -33,7 +33,7 @@
 
         <!---->
         <!--Form result:<br/>-->
-        {{ result }}
+        <!-- {{ result }} -->
         <!--<br/>-->
         <!--Initial value: {{ value }}-->
         <slot name="form-footer"></slot>

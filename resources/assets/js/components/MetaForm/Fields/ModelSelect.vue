@@ -1,6 +1,5 @@
 <template xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml">
     <div>
-        Test
         <div class="columns">
             <div class="column">
                 <div v-if="metaIsLoading">
@@ -39,7 +38,7 @@
 
     export default {
         mounted() {
-            console.log('ModelSelect  123 control mounted.', this.value);
+            console.log('ModelSelect 123 control mounted.', this.value);
             this.loadData();
         },
         watch: {
@@ -87,10 +86,6 @@
                     vm.options = response.body;
                     vm.dataIsLoading = false;
 
-
-                    if (vm.options.length > 0) {
-                     //   vm.selectedValue = vm.options[0];
-                    }
                     // TODO: Abstract into resource
                     vm.$http.get('/orm/api/meta/', {params: {
                         "class": vm.meta.model

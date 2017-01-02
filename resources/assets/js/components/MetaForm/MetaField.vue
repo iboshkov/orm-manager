@@ -15,7 +15,6 @@
         <template v-if="meta.type == 'HasOne'">
             <has-one :value="value" v-on:input="updateValue" :meta="meta" />
         </template>
-        Test {{meta.type}}
         <template v-if="meta.type == 'BelongsTo'">
             <belongs-to :value="value" v-on:input="updateValue" :meta="meta" />
         </template>

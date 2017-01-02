@@ -25,22 +25,26 @@ Vue.component('model-component', require('./components/ModelComponent.vue'));
 var appView = require('./views/App.vue');
 var dashView = require('./views/Dashboard.vue');
 var modelView = require('./views/Models/Layout.vue');
-var allModelsView = require('./views/Models/All.vue');
+var dashHomeView = require('./views/DashHome.vue');
 var singleModelView = require('./views/Models/Single.vue');
 
 const routes = [
-    { path: "/", component: dashView },
-    { path: '/dashboard', name: "dashboard", component: dashView },
-    { path: '/models', name: 'allModels', component: modelView,
-        children: [
+    { path: "/", component: dashView,
+    children: [
+            {
+                path: '/',
+                name: 'dashHome',
+                component: dashHomeView,
+            },
             {
                 // render /models/:id
                 path: '/manage/:id',
                 name: 'singleModel',
                 component: singleModelView,
+                canReuse: false,
             }
         ]
-    }
+  },
 ]
 
 const router = new VueRouter({
