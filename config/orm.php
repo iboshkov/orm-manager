@@ -2,7 +2,9 @@
 
 return [
     "models" => [
-        \App\User::class,
-        \App\Blog\Post::class
+      \App\User::class,
+      \App\Profile::class,
+      \App\Group::class,
+      \App\Blog\Post::class
     ],
 ];

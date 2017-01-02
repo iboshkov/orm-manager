@@ -10,7 +10,11 @@ use App\Http\Controllers\ORMManager;
 
 trait ORMManagerSupport {
     public function getRelationships() {
-        return $this->relationships;
+        if ($this->relationships) {
+          return $this->relationships;
+        } else {
+          return [];
+        }
     }
 }
 

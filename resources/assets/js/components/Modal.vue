@@ -28,6 +28,7 @@
 </template>
 
 <script>
+    // TODO: Implement close on escape.
     export default{
         methods: {
             close() {
@@ -68,6 +69,10 @@
                 type: Boolean,
                 default: false
             },
+            closeOnEscape: {
+                type: Boolean,
+                default: true
+            }
         }
     }
 </script>

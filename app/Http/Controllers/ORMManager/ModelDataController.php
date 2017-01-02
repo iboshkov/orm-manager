@@ -124,6 +124,11 @@ class ModelDataController extends Controller
                 $rtype = $relData["type"] ;
                 $otherModelKey = $relData["param"];
                 $otherModelClass = $relData["model"];
+                
+                if ($rtype == "BelongsToMany") {
+                  var_dump($otherModelKey);
+                  $modelInstance->$relName()->sync($otherModelKey);
+                }
 
                 if ($rtype == "HasMany") {
                   $otherModelMeta = MetaModelController::getModelMeta($otherModelClass);

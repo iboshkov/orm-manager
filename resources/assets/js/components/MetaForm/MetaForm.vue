@@ -85,13 +85,17 @@
                     var relationships = {};
                     vm.meta.relationships.forEach(function(attr) {
                         // Init the relationships field with an empty array
-                        var rel = {};
-                        Vue.set(rel, "type", attr.type);
-                        if (attr.type == "BelongsTo") {
-                            console.log("Setting foreign key for attr: ", attr.type);
-                            Vue.set(rel, "param",  vm.value[attr.foreignKey] || "");
+                        var rel = attr;
+                        console.log("Relationship: ", attr);
+                        Vue.set(rel, "param", "");
+                        if (attr.type == "HasOne" || attr.type == "BelongsTo") {
+                            console.log("Setting foreign key for attr: ", attr.type, vm.value);
+                            Vue.set(rel, "param",  vm.value[attr.name] || "");
                         }
-
+                        if (attr.type == "BelongsToMany" || attr.type == "HasMany") {
+                            console.log("Setting HasMany value to ", vm.value[attr.name]);
+                            Vue.set(rel, "param", vm.value[attr.name]);
+                        }
                         Vue.set(relationships, attr.name, rel);
                     });
                     Vue.set(vm.result, "relationships", relationships);

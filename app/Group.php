@@ -16,4 +16,6 @@ class Group extends Model
     public function users() {
         return $this->belongsToMany('App\User', 'groups_users', 'group_id', 'user_id');
     }
+
+    protected $relationships = ['users']; 
 }
