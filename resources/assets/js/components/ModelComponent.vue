@@ -58,7 +58,7 @@
                 <p class="control">
                     <label class="label">Filter by model field</label>
 
-                    <multiselect v-model="selected" :close-on-select="false" :multiple="true" track-by="name" label="name" :options="options" />
+                    <multiselect v-model="selected" :close-on-select="false" :multiple="true" track-by="name" label="humanName" :options="options" />
                 </p>
 
             </div>

@@ -1,6 +1,6 @@
 <template xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml">
     <div>
-        <span class="label">Which <u>HasMany</u> does this object belong to ?</span>
+        <span class="label">Has Many {{ meta.name | humanize }}</span>
         <!--<label class="label">Filtering by {{ selectedAttribute }}</label>-->
         <!--<label class="label">Selected object: {{ selectedValue }}</label>-->
         <model-select :multiple="true" :value="value" v-on:input="updateValue" :meta="meta"/>

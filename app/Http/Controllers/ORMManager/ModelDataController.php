@@ -126,8 +126,12 @@ class ModelDataController extends Controller
                 $otherModelClass = $relData["model"];
                 
                 if ($rtype == "BelongsToMany") {
-                  var_dump($otherModelKey);
-                  $modelInstance->$relName()->sync($otherModelKey);
+                  if (count($otherModelKey) > 0 && $otherModelKey !== "") {
+                      $modelInstance->$relName()->sync($otherModelKey);
+                  } else {
+                      $modelInstance->$relName()->sync([]);
+                  }
+
                 }
 
                 if ($rtype == "HasMany") {
@@ -150,9 +154,11 @@ class ModelDataController extends Controller
                   
                   //$currentItems->update([$fkey => null]);
                   $newItems = $otherModelClass::find($otherModelKey);
-                  foreach ($newItems as $item) {
-                    $item[$fkey] = $modelInstance[$primaryKeyField];
-                    $item->save();
+                  if ($newItems) {
+                      foreach ($newItems as $item) {
+                        $item[$fkey] = $modelInstance[$primaryKeyField];
+                        $item->save();
+                      }
                   }
                   //return $newItems;
 

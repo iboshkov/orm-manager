@@ -19,6 +19,8 @@ class CreateProfilesTable extends Migration
             $table->foreign('user_id')->references('id')
               ->on('users')->onDelete('cascade'); 
             $table->string('nickname');
+            $table->double('longitude')->nullable();
+            $table->double('latitude')->nullable();
             $table->timestamps();
         });
     }

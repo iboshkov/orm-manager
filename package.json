@@ -45,6 +45,7 @@
   "dependencies": {
     "animate.css": "^3.5.2",
     "bulma": "^0.2.3",
+    "flatpickr": "^2.2.5",
     "moment": "^2.17.1",
     "vue-bulma-datepicker": "^1.2.3",
     "vue-loader": "^10.0.2",

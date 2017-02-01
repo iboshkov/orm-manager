@@ -10,7 +10,7 @@ class Group extends Model
 {
     use ORMManagerSupport;
     protected $fillable = [
-        'id', 'name',
+        'id', 'name', 'allowed_from', 'allowed_to'
     ];
 
     public function users() {

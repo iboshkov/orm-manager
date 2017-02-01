@@ -3,26 +3,33 @@
         <template v-if="meta.type == 'string'">
             <string-field :value="value" v-on:input="updateValue" :meta="meta" />
         </template>
-        <template v-if="meta.type == 'boolean'">
+        <template v-else-if="meta.type == 'boolean'">
             <boolean-field :value="value" v-on:input="updateValue" :meta="meta" />
         </template>
-        <template v-if="meta.type == 'text'">
+        <template v-else-if="meta.type == 'text'">
             <text-field :value="value" v-on:input="updateValue" :meta="meta" />
         </template>
-        <template v-if="meta.type == 'datetime'">
-            <date-time-field :value="value" v-on:input="updateValue" :meta="meta" />
+        <template v-else-if="meta.type == 'datetime' || meta.type == 'date' || meta.type == 'time'">
+            <date-time-field :value="value" :enable-date="meta.type != 'time' || meta.type == 'date' || meta.type == 'date-time'" :enable-time="meta.type != 'date' || meta.type == 'datetime'" v-on:input="updateValue" :meta="meta" />
         </template>
-        <template v-if="meta.type == 'HasOne'">
+        <template v-else-if="meta.type == 'HasOne'">
             <has-one :value="value" v-on:input="updateValue" :meta="meta" />
         </template>
-        <template v-if="meta.type == 'BelongsTo'">
+        <template v-else-if="meta.type == 'BelongsTo'">
             <belongs-to :value="value" v-on:input="updateValue" :meta="meta" />
         </template>
-        <template v-if="meta.type == 'HasMany'">
+        <template v-else-if="meta.type == 'HasMany'">
             <has-many :value="value" v-on:input="updateValue" :meta="meta" />
         </template>
-        <template v-if="meta.type == 'BelongsToMany'">
+        <template v-else-if="meta.type == 'BelongsToMany'">
             <belongs-to-many :value="value" v-on:input="updateValue" :meta="meta" />
+        </template>
+        <template v-else>
+            <div class="notification is-warning">
+                <b>Warning:</b> <u>{{ meta.type | humanize }}</u> field types are not yet supported, so this is our best attempt at handling its value.
+            </div>
+           
+            <string-field :value="value" v-on:input="updateValue" :meta="meta" />
         </template>
 </div>
 </template>

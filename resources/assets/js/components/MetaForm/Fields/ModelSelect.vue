@@ -101,10 +101,10 @@
                         vm.metaIsLoading = false;
                         var selected = [];
                         vm.options.forEach(function(val) {
-                            var otherKey = val[vm.meta.otherKey] || val[vm.meta.foreignKeyPlain];
-                            var thisKey = vm.value[thisKeyField];
+                            var otherKey = val[vm.meta.foreignKey] || val[vm.meta.foreignKeyPlain];
+                            var thisKey = vm.value[vm.meta.foreignKey] || vm.value[vm.meta.foreignKeyPlain];;
                             console.log(vm.meta.name, otherKey, thisKey);
-                            if (!vm.multiple && otherKey == thisKey) {
+                            if (!vm.multiple && thisKey && otherKey &&  otherKey == thisKey) {
                                 Vue.set(vm, "selectedValue", val);
                                 console.log("SELECTED VAL", vm.selectedValue);
                             }

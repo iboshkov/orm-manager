@@ -33,7 +33,7 @@
 
         <!---->
         <!--Form result:<br/>-->
-        <!-- {{ result }} -->
+        {{ result }}
         <!--<br/>-->
         <!--Initial value: {{ value }}-->
         <slot name="form-footer"></slot>
@@ -87,7 +87,6 @@
                         // Init the relationships field with an empty array
                         var rel = attr;
                         console.log("Relationship: ", attr);
-                        Vue.set(rel, "param", "");
                         if (attr.type == "HasOne" || attr.type == "BelongsTo") {
                             console.log("Setting foreign key for attr: ", attr.type, vm.value);
                             Vue.set(rel, "param",  vm.value[attr.name] || "");
@@ -96,6 +95,8 @@
                             console.log("Setting HasMany value to ", vm.value[attr.name]);
                             Vue.set(rel, "param", vm.value[attr.name]);
                         }
+                        if (!rel.param)
+                            Vue.set(rel, "param", "");
                         Vue.set(relationships, attr.name, rel);
                     });
                     Vue.set(vm.result, "relationships", relationships);
