@@ -3,12 +3,15 @@
 Laravel ORM Manager is an attempt to create a re-usable admin panel for Laravel, in the same vein as Django's default 
 admin console.
 
+## Screenshots
+![Model View](/images/orm-model.png)
+
+![Entry Edit View](/images/orm-edit.png)
+
 #### Dependencies:
 - Laravel
 - Vue for the frontend - can be optional in the future
 - DBAL for model metadata retrieval
-
-
 
 ## License
 
